@@ -39,6 +39,52 @@ use Illuminate\Support\Str;
     </div>
 </div>
 
+<!-- Recent Notifications -->
+@if($unreadNotifications > 0 || $recentNotifications->count() > 0)
+<div class="content-panel">
+    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529; display: flex; align-items: center; justify-content: space-between;">
+        <span>🔔 Recent Notifications</span>
+        @if($unreadNotifications > 0)
+        <span class="badge badge-danger">{{ $unreadNotifications }} New</span>
+        @endif
+    </h2>
+    
+    @if($recentNotifications->count() > 0)
+        @foreach($recentNotifications as $notification)
+        <div class="notification-card-mini {{ $notification->is_read ? 'read' : 'unread' }}">
+            <div style="display: flex; gap: 12px; align-items: start;">
+                <div class="notification-icon-mini">
+                    @if($notification->type === 'student_enrollment')
+                        👤
+                    @elseif($notification->type === 'session_update')
+                        📝
+                    @elseif($notification->type === 'session_cancellation')
+                        ❌
+                    @elseif($notification->type === 'session_reschedule')
+                        📅
+                    @else
+                        🔔
+                    @endif
+                </div>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: #212529; margin-bottom: 4px;">{{ $notification->title }}</div>
+                    <div style="font-size: 14px; color: #495057;">{{ Str::limit($notification->message, 100) }}</div>
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 4px;">{{ $notification->time_ago }}</div>
+                </div>
+                @if(!$notification->is_read)
+                <span class="badge badge-primary">New</span>
+                @endif
+            </div>
+        </div>
+        @endforeach
+
+        <div style="text-align: center; margin-top: 20px;">
+            <a href="{{ route('tutor.notifications') }}" class="btn btn-secondary">View All Notifications</a>
+        </div>
+    @endif
+</div>
+@endif
+
 <!-- Upcoming Sessions -->
 <div class="content-panel">
     <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">📅 Upcoming Sessions</h2>
@@ -100,44 +146,178 @@ use Illuminate\Support\Str;
             <div class="empty-icon">📅</div>
             <h3>No Upcoming Sessions</h3>
             <p>You don't have any scheduled sessions at the moment.</p>
-            <a href="{{ route('tutor.sessions.index', ['tab' => 'all']) }}" class="btn btn-primary" style="margin-top: 20px;">Find Sessions to Teach</a>
         </div>
     @endif
 </div>
 
-<!-- Recent Announcements -->
+<!-- Ratings & Feedback Section -->
 <div class="content-panel">
-    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">📢 Recent Announcements</h2>
+    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">⭐ Ratings & Feedback</h2>
     
-    @if($recentAnnouncements->count() > 0)
-        @foreach($recentAnnouncements as $announcement)
-        <div class="announcement-card {{ strtolower($announcement->priority) }}">
-            <div class="announcement-header">
-                <div>
-                    <div class="announcement-title">{{ $announcement->title }}</div>
-                    <div class="announcement-meta">
-                        <span class="badge badge-{{ $announcement->priority === 'Urgent' ? 'danger' : ($announcement->priority === 'High' ? 'warning' : 'info') }}">
-                            {{ $announcement->priority }}
-                        </span>
-                        <span>{{ $announcement->category }}</span>
-                        <span>{{ $announcement->created_at->diffForHumans() }}</span>
-                    </div>
+    <div class="rating-summary">
+        <div class="rating-overview">
+            <div class="rating-score">
+                <span class="rating-number">{{ number_format($averageRating, 1) }}</span>
+                <div class="rating-stars">
+                    @for($i = 1; $i <= 5; $i++)
+                        @if($i <= floor($averageRating))
+                            ⭐
+                        @elseif($i - 0.5 <= $averageRating)
+                            ⭐
+                        @else
+                            ☆
+                        @endif
+                    @endfor
                 </div>
             </div>
-            <div class="announcement-content">
-                {{ Str::limit($announcement->content, 200) }}
+            <div class="rating-meta">
+                <strong>{{ $totalFeedback }}</strong> total reviews
             </div>
         </div>
-        @endforeach
+    </div>
 
-        <div style="text-align: center; margin-top: 20px;">
-            <a href="{{ route('tutor.announcements') }}" class="btn btn-secondary">View All Announcements</a>
+    @if(count($recentFeedback) > 0)
+        <div style="margin-top: 30px;">
+            <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #212529;">Recent Feedback</h3>
+            @foreach($recentFeedback as $feedback)
+            <div class="feedback-card">
+                <div class="feedback-header">
+                    <div>
+                        <strong>{{ $feedback['student_name'] }}</strong>
+                        <div style="font-size: 13px; color: #6c757d;">
+                            {{ $feedback['date'] }}
+                        </div>
+                    </div>
+                    <div class="feedback-rating">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= $feedback['rating'])
+                                ⭐
+                            @else
+                                ☆
+                            @endif
+                        @endfor
+                    </div>
+                </div>
+                <div class="feedback-comment">
+                    {{ $feedback['comment'] }}
+                </div>
+            </div>
+            @endforeach
         </div>
     @else
-        <div class="empty-state">
-            <div class="empty-icon">📢</div>
-            <p>No announcements available</p>
+        <div class="empty-state" style="padding: 40px 20px;">
+            <div class="empty-icon">💬</div>
+            <p>No feedback yet. Keep up the great work!</p>
         </div>
     @endif
 </div>
+
+<style>
+.notification-card-mini {
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.notification-card-mini.unread {
+    background: #f0f7ff;
+    border-left-color: #2d5f8d;
+}
+
+.notification-card-mini:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notification-icon-mini {
+    font-size: 24px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.notification-card-mini.unread .notification-icon-mini {
+    background: #e3f2fd;
+}
+
+.rating-summary {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    padding: 30px;
+}
+
+.rating-overview {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.rating-score {
+    text-align: center;
+}
+
+.rating-number {
+    font-size: 48px;
+    font-weight: 700;
+    color: #FFA500;
+    display: block;
+    line-height: 1;
+}
+
+.rating-stars {
+    font-size: 24px;
+    margin-top: 8px;
+}
+
+.rating-meta {
+    font-size: 16px;
+    color: #6c757d;
+}
+
+.feedback-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.feedback-rating {
+    font-size: 16px;
+}
+
+.feedback-comment {
+    font-size: 14px;
+    color: #495057;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .rating-overview {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .rating-number {
+        font-size: 36px;
+    }
+    
+    .rating-stars {
+        font-size: 20px;
+    }
+}
+</style>
 @endsection

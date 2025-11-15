@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Session;
-use App\Models\Announcement;
 use App\Models\Student;
+use App\Models\Notification;
 use Carbon\Carbon;
 
 class TutorDashboardController extends Controller
@@ -41,16 +41,6 @@ class TutorDashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Get recent announcements
-        $recentAnnouncements = Announcement::where(function($query) {
-                $query->where('target_audience', 'All')
-                      ->orWhere('target_audience', 'Tutors');
-            })
-            ->whereNull('archived_at')
-            ->orderBy('created_at', 'desc')
-            ->limit(3)
-            ->get();
-
         // Statistics
         $totalSessions = Session::where('tutor_id', $tutor->id)->count();
         $completedSessions = Session::where('tutor_id', $tutor->id)
@@ -65,14 +55,34 @@ class TutorDashboardController extends Controller
             ->distinct('session_enrollments.student_id')
             ->count('session_enrollments.student_id');
 
+        // Get unread notifications count
+        $unreadNotifications = Notification::where('tutor_id', $tutor->id)
+            ->unread()
+            ->count();
+
+        // Get recent notifications
+        $recentNotifications = Notification::where('tutor_id', $tutor->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Get tutor ratings and feedback (placeholder - implement based on your feedback system)
+        $averageRating = 0; // Calculate from feedback table
+        $totalFeedback = 0; // Count from feedback table
+        $recentFeedback = []; // Get recent feedback entries
+
         return view('tutor.dashboard', compact(
             'tutor',
             'upcomingSessions',
-            'recentAnnouncements',
             'totalSessions',
             'completedSessions',
             'upcomingCount',
-            'totalStudents'
+            'totalStudents',
+            'unreadNotifications',
+            'recentNotifications',
+            'averageRating',
+            'totalFeedback',
+            'recentFeedback'
         ));
     }
 }

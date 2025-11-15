@@ -18,6 +18,7 @@ class Announcement extends Model
         'target_audience',
         'priority',
         'archived_at',
+        'created_by_tutor_id', // Track which tutor created it
     ];
 
     protected $casts = [
@@ -25,6 +26,14 @@ class Announcement extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+    /**
+     * Get the tutor who created this announcement
+     */
+    public function createdByTutor()
+    {
+        return $this->belongsTo(Tutor::class, 'created_by_tutor_id');
+    }
 
     /**
      * Check if announcement is archived

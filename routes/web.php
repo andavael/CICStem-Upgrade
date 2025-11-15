@@ -12,6 +12,7 @@ use App\Http\Controllers\Tutor\TutorDashboardController;
 use App\Http\Controllers\Tutor\TutorSessionController;
 use App\Http\Controllers\Tutor\TutorAnnouncementController;
 use App\Http\Controllers\Tutor\TutorProfileController;
+use App\Http\Controllers\Tutor\TutorNotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,20 +55,42 @@ Route::middleware(['auth:tutor'])->prefix('tutor')->name('tutor.')->group(functi
         // Dashboard
         Route::get('/dashboard', [TutorDashboardController::class, 'index'])->name('dashboard');
         
-        // Sessions Management (view only - no apply functionality)
+        // Sessions Management
         Route::prefix('sessions')->name('sessions.')->group(function () {
             Route::get('/', [TutorSessionController::class, 'index'])->name('index');
             Route::get('/{id}', [TutorSessionController::class, 'show'])->name('show');
             Route::put('/{sessionId}/attendance/{studentId}', [TutorSessionController::class, 'updateAttendance'])->name('attendance');
+            
+            // Student enrollment management
+            Route::post('/{sessionId}/add-student', [TutorSessionController::class, 'addStudent'])->name('addStudent');
+            Route::post('/{sessionId}/approve/{studentId}', [TutorSessionController::class, 'approveStudent'])->name('approve');
+            Route::delete('/{sessionId}/reject/{studentId}', [TutorSessionController::class, 'rejectStudent'])->name('reject');
         });
         
-        // Announcements
-        Route::get('/announcements', [TutorAnnouncementController::class, 'index'])->name('announcements');
+        // Notifications
+        Route::prefix('notifications')->name('notifications.')->group(function () {
+            Route::get('/', [TutorNotificationController::class, 'index'])->name('index');
+            Route::post('/{id}/read', [TutorNotificationController::class, 'markAsRead'])->name('markRead');
+            Route::post('/read-all', [TutorNotificationController::class, 'markAllAsRead'])->name('markAllRead');
+            Route::delete('/{id}', [TutorNotificationController::class, 'destroy'])->name('delete');
+        });
         
-        // Profile - main route (this creates 'tutor.profile')
+        // Announcements (FIXED - removed duplicate prefix/name/middleware)
+        Route::prefix('announcements')->name('announcements.')->group(function () {
+            Route::get('/', [TutorAnnouncementController::class, 'index'])->name('index');
+            Route::get('/create', [TutorAnnouncementController::class, 'create'])->name('create');
+            Route::post('/', [TutorAnnouncementController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [TutorAnnouncementController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [TutorAnnouncementController::class, 'update'])->name('update');
+        });
+        
+        // Status update route (inside tutor group, correct name)
+        Route::patch('sessions/{session}/status', [TutorSessionController::class, 'updateStatus'])
+            ->name('sessions.updateStatus');
+
+
+        // Profile
         Route::get('/profile', [TutorProfileController::class, 'index'])->name('profile');
-        
-        // Profile - update routes
         Route::put('/profile/update', [TutorProfileController::class, 'update'])->name('profile.update');
         Route::put('/profile/password', [TutorProfileController::class, 'updatePassword'])->name('profile.password');
         Route::put('/profile/resume', [TutorProfileController::class, 'updateResume'])->name('profile.resume');

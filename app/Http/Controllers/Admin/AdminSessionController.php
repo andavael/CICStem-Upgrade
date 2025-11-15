@@ -71,6 +71,20 @@ class AdminSessionController extends Controller
     }
     
     /**
+     * Generate a Google Meet code in xxx-yyyy-zzz format
+     */
+    private function generateMeetCode()
+    {
+        $characters = 'abcdefghijklmnopqrstuvwxyz';
+        
+        $part1 = substr(str_shuffle($characters), 0, 3);
+        $part2 = substr(str_shuffle($characters), 0, 4);
+        $part3 = substr(str_shuffle($characters), 0, 3);
+        
+        return "{$part1}-{$part2}-{$part3}";
+    }
+    
+    /**
      * Store new session
      */
     public function store(Request $request)
@@ -82,9 +96,11 @@ class AdminSessionController extends Controller
             'tutor_id' => 'required|exists:tutors,id',
             'capacity' => 'required|integer|min:1|max:100',
             'year_level' => 'required|in:1st Year,2nd Year,3rd Year,4th Year,All',
-            'google_meet_link' => 'nullable|url',
+            'google_meet_link' => 'nullable|url|regex:/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/',
             'description' => 'nullable|string',
             'status' => 'required|in:Scheduled,Ongoing,Completed,Cancelled',
+        ], [
+            'google_meet_link.regex' => 'Google Meet link must be in the format: https://meet.google.com/xxx-yyyy-zzz'
         ]);
         
         // Generate session code
@@ -92,8 +108,8 @@ class AdminSessionController extends Controller
 
         // Auto-generate Google Meet link if not provided
         if (empty($validated['google_meet_link'])) {
-            $uniqueId = substr(uniqid(), -10); // random string
-            $validated['google_meet_link'] = "https://meet.google.com/{$uniqueId}";
+            $meetCode = $this->generateMeetCode();
+            $validated['google_meet_link'] = "https://meet.google.com/{$meetCode}";
         }       
         
         Session::create($validated);
@@ -139,9 +155,11 @@ class AdminSessionController extends Controller
             'tutor_id' => 'required|exists:tutors,id',
             'capacity' => 'required|integer|min:1|max:100',
             'year_level' => 'required|in:1st Year,2nd Year,3rd Year,4th Year,All',
-            'google_meet_link' => 'required|url',
+            'google_meet_link' => 'required|url|regex:/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/',
             'description' => 'nullable|string',
             'status' => 'required|in:Scheduled,Ongoing,Completed,Cancelled',
+        ], [
+            'google_meet_link.regex' => 'Google Meet link must be in the format: https://meet.google.com/xxx-yyyy-zzz'
         ]);
         
         $session->update($validated);
