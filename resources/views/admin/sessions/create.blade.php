@@ -1,0 +1,123 @@
+@extends('admin.layouts.app')
+
+@section('title', 'Create New Session')
+
+@section('content')
+<div class="page-header">
+    <h1 class="page-title">Create New Session</h1>
+    <div class="page-actions">
+        <a href="{{ route('admin.sessions.index') }}" class="btn btn-secondary">Back to Sessions</a>
+    </div>
+</div>
+
+<div class="content-panel">
+    <form action="{{ route('admin.sessions.store') }}" method="POST">
+        @csrf
+        
+        <div class="form-grid">
+            {{-- Subject Dropdown --}}
+            <div class="form-group form-grid-full">
+                <label for="subject">Subject <span class="required">*</span></label>
+                <select name="subject" id="subject" required>
+                    <option value="">Select Subject</option>
+                    @foreach($subjects as $subject)
+                        <option value="{{ $subject->name }}" {{ old('subject') == $subject->name ? 'selected' : '' }}>
+                            {{ $subject->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('subject')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            {{-- Session Date --}}
+            <div class="form-group">
+                <label for="session_date">Session Date <span class="required">*</span></label>
+                <input type="date" name="session_date" id="session_date" value="{{ old('session_date') }}" min="{{ date('Y-m-d') }}" required>
+                @error('session_date')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            {{-- Session Time --}}
+            <div class="form-group">
+                <label for="session_time">Session Time <span class="required">*</span></label>
+                <input type="time" name="session_time" id="session_time" value="{{ old('session_time') }}" required>
+                @error('session_time')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            {{-- Tutor Dropdown --}}
+            <div class="form-group">
+                <label for="tutor_id">Assigned Tutor <span class="required">*</span></label>
+                <select name="tutor_id" id="tutor_id" required>
+                    <option value="">Select Tutor</option>
+                    @forelse($tutors as $tutor)
+                        <option value="{{ $tutor->id }}" {{ old('tutor_id') == $tutor->id ? 'selected' : '' }}>
+                            {{ $tutor->full_name }} ({{ $tutor->year_level }})
+                        </option>
+                    @empty
+                        <option value="" disabled>No tutors available</option>
+                    @endforelse
+                </select>
+                @error('tutor_id')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            {{-- Year Level --}}
+            <div class="form-group">
+                <label for="year_level">Year Level <span class="required">*</span></label>
+                <select name="year_level" id="year_level" required>
+                    <option value="">Select Year Level</option>
+                    <option value="1st Year" {{ old('year_level') === '1st Year' ? 'selected' : '' }}>1st Year</option>
+                    <option value="2nd Year" {{ old('year_level') === '2nd Year' ? 'selected' : '' }}>2nd Year</option>
+                </select>
+                @error('year_level')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            {{-- Capacity --}}
+            <div class="form-group">
+                <label for="capacity">Capacity <span class="required">*</span></label>
+                <input type="number" name="capacity" id="capacity" value="{{ old('capacity', 30) }}" min="1" max="100" required>
+                @error('capacity')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+            
+            {{-- Status --}}
+            <div class="form-group">
+                <label for="status">Status <span class="required">*</span></label>
+                <select name="status" id="status" required>
+                    <option value="Scheduled" {{ old('status') === 'Scheduled' ? 'selected' : '' }}>Scheduled</option>
+                    <option value="Ongoing" {{ old('status') === 'Ongoing' ? 'selected' : '' }}>Ongoing</option>
+                    <option value="Completed" {{ old('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="Cancelled" {{ old('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+                @error('status')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+
+            
+            {{-- Description --}}
+            <div class="form-group form-grid-full">
+                <label for="description">Description (Optional)</label>
+                <textarea name="description" id="description" rows="4" style="width: 100%; padding: 12px; border: 2px solid #dee2e6; border-radius: 8px; font-family: 'Inter', sans-serif;">{{ old('description') }}</textarea>
+                @error('description')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; margin-top: 30px;">
+            <button type="submit" class="btn btn-primary">Create Session</button>
+            <a href="{{ route('admin.sessions.index') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+@endsection
