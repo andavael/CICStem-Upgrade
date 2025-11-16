@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">🔔 Notifications</h1>
+    <h1 class="page-title">Notifications</h1>
     <div class="page-actions">
         @if($unreadCount > 0)
         <form action="{{ route('student.notifications.markAllRead') }}" method="POST" style="display: inline;">
@@ -82,6 +82,17 @@
 </div>
 
 <style>
+.empty-state {
+    text-align: center;
+    padding: 40px;
+    background-color: #f8f9fa;       /* light gray background */
+    border: 1px solid #01336584;       /* subtle border */
+    border-radius: 8px;              /* rounded corners */
+    box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1); /* soft shadow */
+    max-width: 400px;
+    margin: 20px auto;               /* center horizontally */
+}
+
 .notification-item {
     background: white;
     border: 2px solid #dee2e6;

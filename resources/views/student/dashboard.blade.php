@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">📊 Dashboard</h1>
+    <h1 class="page-title">Hello, {{ $student->first_name }}! 👋</h1>
     <div class="page-actions">
         <a href="{{ route('student.available-sessions.index') }}" class="btn btn-primary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
@@ -18,11 +18,8 @@
 </div>
 
 <!-- Welcome Message -->
-<div class="content-panel">
-    <h2 style="font-size: 24px; font-weight: 600; color: #212529; margin-bottom: 8px;">
-        Hello, {{ $student->first_name }}! 👋
-    </h2>
-    <p style="color: #6c757d; font-size: 15px;">
+<div class="content-panel" style="background-color: #3797f745;">
+    <p style="color: #00213fff; font-size: 15px;">
         Here's an overview of your tutoring activities and upcoming sessions.
     </p>
 </div>
@@ -56,7 +53,7 @@
 
 <!-- Upcoming Sessions -->
 <div class="content-panel">
-    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">📋 Upcoming Sessions (Next 3 Days)</h2>
+    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px;">Upcoming Sessions (Next 3 Days)</h2>
     
     @if($upcomingSessions->count() > 0)
     <div class="table-responsive">
@@ -123,7 +120,7 @@
 <!-- My Enrolled Sessions -->
 <div class="content-panel">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 20px; font-weight: 600; margin: 0;">📚 Recent Enrolled Sessions</h2>
+        <h2 style="font-size: 20px; font-weight: 600; margin: 0;">Recent Enrolled Sessions</h2>
         <a href="{{ route('student.my-sessions.index') }}" style="color: #2d5f8d; text-decoration: none; font-weight: 500;">
             View All →
         </a>
@@ -189,44 +186,16 @@
     @endif
 </div>
 
-<!-- Recent Announcements -->
-<div class="content-panel">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2 style="font-size: 20px; font-weight: 600; margin: 0;">📢 Recent Announcements</h2>
-        <a href="{{ route('student.announcements.index') }}" style="color: #2d5f8d; text-decoration: none; font-weight: 500;">
-            View All →
-        </a>
-    </div>
-    
-    @if($recentAnnouncements->count() > 0)
-    @foreach($recentAnnouncements as $announcement)
-    <div class="announcement-card">
-        <div class="announcement-header">
-            <div style="flex: 1;">
-                <div class="announcement-title">{{ $announcement->title }}</div>
-                <div class="announcement-meta">
-                    <span class="badge badge-{{ $announcement->priority === 'Urgent' ? 'danger' : ($announcement->priority === 'High' ? 'warning' : 'info') }}">
-                        {{ $announcement->priority }}
-                    </span>
-                    <span class="badge badge-secondary">{{ $announcement->category }}</span>
-                    <span>{{ $announcement->created_at->diffForHumans() }}</span>
-                </div>
-            </div>
-        </div>
-        <div class="announcement-content">
-            {{ Str::limit($announcement->content, 200) }}
-        </div>
-    </div>
-    @endforeach
-    @else
-    <div class="empty-state">
-        <div class="empty-state-icon">📢</div>
-        <p>No recent announcements.</p>
-    </div>
-    @endif
-</div>
-
 <style>
+
+.content-panel {
+    /* background-color: removed */
+    padding: 20px;               /* keeps spacing inside */
+    border-radius: 20px;          /* rounded corners */
+    box-shadow: 2px 2px 8px 8px rgba(0, 0, 0, 0.1); /* subtle shadow */
+}
+
+
 .stat-card {
     position: relative;
     overflow: hidden;

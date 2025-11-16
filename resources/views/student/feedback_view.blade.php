@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">⭐ Your Feedback</h1>
+    <h1 class="page-title">Your Feedback</h1>
     <div class="page-actions">
         <a href="{{ route('student.feedback.index') }}" class="btn btn-secondary">Back to Feedback</a>
     </div>

@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">👤 My Profile</h1>
+    <h1 class="page-title">Profile Settings</h1>
 </div>
 
 <!-- Profile Information -->

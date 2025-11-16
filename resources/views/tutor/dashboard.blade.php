@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">Hello, {{ Str::title($tutor->first_name) }}!</h1>
+    <h1 class="page-title">Hello, {{ Str::title($tutor->first_name) }}!👋</h1>
 </div>
 
 <!-- Statistics -->

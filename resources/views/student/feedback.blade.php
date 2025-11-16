@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">⭐ Session Feedback</h1>
+    <h1 class="page-title">Session Feedback</h1>
 </div>
 
 <div class="content-panel">

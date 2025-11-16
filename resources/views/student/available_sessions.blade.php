@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">🔍 Browse Available Sessions</h1>
+    <h1 class="page-title">Browse Available Sessions</h1>
     <div class="page-actions">
         <a href="{{ route('student.my-sessions.index') }}" class="btn btn-secondary">
             My Enrolled Sessions
