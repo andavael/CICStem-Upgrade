@@ -64,4 +64,14 @@ class Student extends Authenticatable
     {
         return $this->status === 'Active';
     }
+
+    /**
+ * Get sessions this student is enrolled in
+ */
+    public function sessions()
+    {
+        return $this->belongsToMany(Session::class, 'session_enrollments', 'student_id', 'session_id')
+                    ->withPivot('enrolled_at', 'attendance_status')
+                    ->withTimestamps();
+    }
 }

@@ -13,6 +13,13 @@ use App\Http\Controllers\Tutor\TutorSessionController;
 use App\Http\Controllers\Tutor\TutorAnnouncementController;
 use App\Http\Controllers\Tutor\TutorProfileController;
 use App\Http\Controllers\Tutor\TutorNotificationController;
+use App\Http\Controllers\Student\StudentDashboardController;
+use App\Http\Controllers\Student\AvailableSessionsController;
+use App\Http\Controllers\Student\MySessionsController;
+use App\Http\Controllers\Student\StudentAnnouncementsController;
+use App\Http\Controllers\Student\StudentFeedbackController;
+use App\Http\Controllers\Student\StudentProfileController;
+use App\Http\Controllers\Student\StudentNotificationsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,14 +43,63 @@ Route::middleware('guest:student,tutor,admin')->group(function () {
 // Logout Route
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Student Routes
+/*
+|--------------------------------------------------------------------------
+| STUDENT ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth:student'])->prefix('student')->name('student.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('student.dashboard');
-    })->name('dashboard');
+    // Dashboard
+    Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+    
+    // Available Sessions (Browse & Enroll)
+    Route::prefix('available-sessions')->name('available-sessions.')->group(function () {
+        Route::get('/', [AvailableSessionsController::class, 'index'])->name('index');
+        Route::post('/{sessionId}/enroll', [AvailableSessionsController::class, 'enroll'])->name('enroll');
+        Route::delete('/{sessionId}/unenroll', [AvailableSessionsController::class, 'unenroll'])->name('unenroll');
+    });
+    
+    // My Sessions (Enrolled Sessions)
+    Route::prefix('my-sessions')->name('my-sessions.')->group(function () {
+        Route::get('/', [MySessionsController::class, 'index'])->name('index');
+        Route::get('/{sessionId}', [MySessionsController::class, 'show'])->name('show');
+    });
+    
+    // Announcements
+    Route::prefix('announcements')->name('announcements.')->group(function () {
+        Route::get('/', [StudentAnnouncementsController::class, 'index'])->name('index');
+        Route::get('/{id}', [StudentAnnouncementsController::class, 'show'])->name('show');
+    });
+    
+    // Feedback & Rating
+    Route::prefix('feedback')->name('feedback.')->group(function () {
+        Route::get('/', [StudentFeedbackController::class, 'index'])->name('index');
+        Route::get('/{sessionId}/create', [StudentFeedbackController::class, 'create'])->name('create');
+        Route::post('/{sessionId}', [StudentFeedbackController::class, 'store'])->name('store');
+        Route::get('/{sessionId}/view', [StudentFeedbackController::class, 'show'])->name('show');
+    });
+    
+    // Profile
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [StudentProfileController::class, 'index'])->name('index');
+        Route::put('/update', [StudentProfileController::class, 'update'])->name('update');
+        Route::put('/password', [StudentProfileController::class, 'updatePassword'])->name('password');
+    });
+    
+    // Notifications
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [StudentNotificationsController::class, 'index'])->name('notifications');
+        Route::post('/{id}/read', [StudentNotificationsController::class, 'markAsRead'])->name('notifications.markRead');
+        Route::post('/read-all', [StudentNotificationsController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+        Route::delete('/{id}', [StudentNotificationsController::class, 'destroy'])->name('notifications.delete');
+    });
 });
 
-// Tutor Routes
+/*
+|--------------------------------------------------------------------------
+| TUTOR ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth:tutor'])->prefix('tutor')->name('tutor.')->group(function () {
     // Pending page (accessible before approval)
     Route::get('/pending', function () {
@@ -97,8 +153,13 @@ Route::middleware(['auth:tutor'])->prefix('tutor')->name('tutor.')->group(functi
     });
 });
 
-// Admin Routes
+/*
+|--------------------------------------------------------------------------
+| ADMIN ROUTES
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/export', [AdminDashboardController::class, 'export'])->name('dashboard.export');
     
@@ -129,6 +190,7 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
         Route::get('/{tutor}/resume', [AdminTutorController::class, 'downloadResume'])->name('downloadResume');
     });
 
+    // Users (Combined view)
     Route::get('/users', [AdminStudentController::class, 'usersIndex'])->name('users.index');
     
     // Sessions
@@ -155,7 +217,11 @@ Route::middleware(['auth:admin'])->prefix('admin')->name('admin.')->group(functi
     });
 });
 
-// Fallback Route
+/*
+|--------------------------------------------------------------------------
+| FALLBACK ROUTE
+|--------------------------------------------------------------------------
+*/
 Route::fallback(function () {
     return view('errors.404');
 });

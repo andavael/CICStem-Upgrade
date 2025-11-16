@@ -260,4 +260,14 @@ ALTER TABLE tutors
 ADD CONSTRAINT chk_tutor_sr_code_year
 CHECK (CAST(SUBSTRING(sr_code, 1, 2) AS INTEGER) < 23);
 
-
+CREATE TABLE notifications (
+    id SERIAL PRIMARY KEY,
+    tutor_id BIGINT NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    related_id BIGINT,
+    is_read BOOLEAN DEFAULT FALSE,
+    read_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
