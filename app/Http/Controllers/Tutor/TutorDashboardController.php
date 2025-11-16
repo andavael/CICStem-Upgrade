@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Tutor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\Session;
 use App\Models\Student;
 use App\Models\Notification;
@@ -66,10 +67,40 @@ class TutorDashboardController extends Controller
             ->limit(5)
             ->get();
 
-        // Get tutor ratings and feedback (placeholder - implement based on your feedback system)
-        $averageRating = 0; // Calculate from feedback table
-        $totalFeedback = 0; // Count from feedback table
-        $recentFeedback = []; // Get recent feedback entries
+        // Get tutor ratings and feedback
+        $averageRating = DB::table('session_feedback')
+            ->where('tutor_id', $tutor->id)
+            ->avg('rating') ?? 0;
+
+        $totalFeedback = DB::table('session_feedback')
+            ->where('tutor_id', $tutor->id)
+            ->count();
+
+        // Get recent feedback with student names
+        $recentFeedback = DB::table('session_feedback')
+            ->join('students', 'session_feedback.student_id', '=', 'students.id')
+            ->join('tutor_sessions', 'session_feedback.session_id', '=', 'tutor_sessions.id')
+            ->where('session_feedback.tutor_id', $tutor->id)
+            ->select(
+                'session_feedback.*',
+                DB::raw("CONCAT(students.first_name, ' ', students.last_name) as student_name"),
+                'tutor_sessions.subject',
+                'tutor_sessions.session_code'
+            )
+            ->orderBy('session_feedback.created_at', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($feedback) {
+                return [
+                    'student_name' => $feedback->student_name,
+                    'rating' => $feedback->rating,
+                    'comment' => $feedback->comment ?? 'No comment provided',
+                    'date' => Carbon::parse($feedback->created_at)->format('M d, Y'),
+                    'subject' => $feedback->subject,
+                    'session_code' => $feedback->session_code
+                ];
+            })
+            ->toArray();
 
         return view('tutor.dashboard', compact(
             'tutor',

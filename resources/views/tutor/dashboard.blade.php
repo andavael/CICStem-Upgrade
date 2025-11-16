@@ -185,6 +185,9 @@ use Illuminate\Support\Str;
                     <div>
                         <strong>{{ $feedback['student_name'] }}</strong>
                         <div style="font-size: 13px; color: #6c757d;">
+                            {{ $feedback['subject'] }} • {{ $feedback['session_code'] }}
+                        </div>
+                        <div style="font-size: 12px; color: #6c757d; margin-top: 2px;">
                             {{ $feedback['date'] }}
                         </div>
                     </div>
