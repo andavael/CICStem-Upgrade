@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">📊 Welcome, {{ Str::title($tutor->first_name) }}!</h1>
+    <h1 class="page-title">Hello, {{ Str::title($tutor->first_name) }}!</h1>
 </div>
 
 <!-- Statistics -->
@@ -87,7 +87,7 @@ use Illuminate\Support\Str;
 
 <!-- Upcoming Sessions -->
 <div class="content-panel">
-    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">📅 Upcoming Sessions</h2>
+    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">Upcoming Sessions</h2>
     
     @if($upcomingSessions->count() > 0)
         @foreach($upcomingSessions as $session)
@@ -152,7 +152,7 @@ use Illuminate\Support\Str;
 
 <!-- Ratings & Feedback Section -->
 <div class="content-panel">
-    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">⭐ Ratings & Feedback</h2>
+    <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529;">Ratings & Feedback</h2>
     
     <div class="rating-summary">
         <div class="rating-overview">
@@ -216,6 +216,14 @@ use Illuminate\Support\Str;
 </div>
 
 <style>
+.content-panel {
+    /* background-color: removed */
+    padding: 20px;               /* keeps spacing inside */
+    border: 1px solid #01264dff;   /* blue border */
+    border-radius: 20px;          /* rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* subtle shadow */
+}
+
 .notification-card-mini {
     background: white;
     border-radius: 8px;

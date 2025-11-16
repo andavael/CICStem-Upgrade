@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">🔔 Notifications</h1>
+    <h1 class="page-title">Notifications</h1>
     <div class="page-actions">
         @if($unreadCount > 0)
         <form action="{{ route('tutor.notifications.markAllRead') }}" method="POST" style="display: inline;">

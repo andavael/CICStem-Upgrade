@@ -5,7 +5,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">📢 Announcements</h1>
+    <h1 class="page-title">Announcements</h1>
     <div class="page-actions">
         <a href="{{ route('tutor.announcements.create') }}" class="btn btn-primary">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 6px;">
