@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">👥 User Management</h1>
+    <h1 class="page-title">User Management</h1>
     <div class="page-actions">
         @if($tab === 'students')
         <a href="{{ route('admin.students.create') }}" class="btn btn-primary">
@@ -72,7 +72,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td><span class="code-badge">{{ $student->sr_code }}</span></td>
+                        <td>{{ $student->sr_code }}</td>
                         <td>{{ $student->email }}</td>
                         <td><span class="year-badge">{{ $student->year_level }}</span></td>
                         <td><span class="course-badge">{{ $student->course_program }}</span></td>
@@ -141,10 +141,10 @@
                                 </div>
                             </div>
                         </td>
-                        <td><span class="code-badge">{{ $tutor->sr_code }}</span></td>
+                        <td>{{ $tutor->sr_code }}</td>
                         <td>{{ $tutor->email }}</td>
                         <td><span class="year-badge">{{ $tutor->year_level }}</span></td>
-                        <td><span class="badge badge-success gwa-badge">⭐ {{ $tutor->gwa }}</span></td>
+                        <td><span class="badge badge-success gwa-badge">{{ $tutor->gwa }}</span></td>
                         <td>
                             @if($tutor->status === 'Active')
                                 <span class="badge badge-success status-badge">Active</span>

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">📊 Dashboard & Reports</h1>
+    <h1 class="page-title">Dashboard & Reports</h1>
     <div class="page-actions">
         <form action="{{ route('admin.dashboard.export') }}" method="GET" style="display: inline-flex; align-items: center; gap: 10px;">
             <select name="format" class="export-select">
@@ -65,7 +65,7 @@
 <!-- Popular Subjects -->
 <div class="content-panel panel-enhanced">
     <div class="panel-header">
-        <h2 class="panel-title">🎯 Popular Subjects</h2>
+        <h2 class="panel-title">Popular Subjects</h2>
         <span class="panel-badge">Top Performing</span>
     </div>
     
@@ -115,7 +115,7 @@
 <!-- Active Tutors -->
 <div class="content-panel panel-enhanced">
     <div class="panel-header">
-        <h2 class="panel-title">⭐ Active Tutors</h2>
+        <h2 class="panel-title">Active Tutors</h2>
         <span class="panel-badge success">{{ $activeTutors->count() }} Online</span>
     </div>
     
@@ -162,7 +162,7 @@
 <!-- Recent Sessions -->
 <div class="content-panel panel-enhanced">
     <div class="panel-header">
-        <h2 class="panel-title">🕒 Recent Sessions</h2>
+        <h2 class="panel-title">Recent Sessions</h2>
         <a href="{{ route('admin.sessions.index') }}" class="panel-link">View All →</a>
     </div>
     
@@ -222,7 +222,7 @@
 <!-- Student Distribution by Year Level -->
 <div class="content-panel panel-enhanced">
     <div class="panel-header">
-        <h2 class="panel-title">📊 Student Distribution by Year Level</h2>
+        <h2 class="panel-title">Student Distribution by Year Level</h2>
         <span class="panel-badge">Overview</span>
     </div>
     

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="page-header">
-    <h1 class="page-title">📢 Announcements</h1>
+    <h1 class="page-title">Announcements</h1>
     <div class="page-actions">
         <a href="{{ route('admin.announcements.create') }}" class="btn btn-primary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px;">
@@ -30,8 +30,8 @@
             </label>
             <select name="status" class="filter-input" onchange="this.form.submit()">
                 <option value="">All Announcements</option>
-                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>✅ Active Only</option>
-                <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>📦 Archived Only</option>
+                <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active Only</option>
+                <option value="archived" {{ request('status') === 'archived' ? 'selected' : '' }}>Archived Only</option>
             </select>
         </div>
         
@@ -100,14 +100,14 @@
                             </span>
                         @endif
                     </td>
-                    <td><span class="audience-badge">👥 {{ $announcement->target_audience }}</span></td>
+                    <td><span class="audience-badge">{{ $announcement->target_audience }}</span></td>
                     <td>
                         @if($announcement->priority === 'Urgent')
-                            <span class="badge badge-danger priority-badge">🚨 {{ $announcement->priority }}</span>
+                            <span class="badge badge-danger priority-badge">{{ $announcement->priority }}</span>
                         @elseif($announcement->priority === 'High')
-                            <span class="badge badge-warning priority-badge">⚡ {{ $announcement->priority }}</span>
+                            <span class="badge badge-warning priority-badge">{{ $announcement->priority }}</span>
                         @else
-                            <span class="badge badge-secondary priority-badge">📋 {{ $announcement->priority }}</span>
+                            <span class="badge badge-secondary priority-badge">{{ $announcement->priority }}</span>
                         @endif
                     </td>
                     <td>
@@ -118,9 +118,9 @@
                     </td>
                     <td>
                         @if($announcement->archived_at)
-                            <span class="badge badge-secondary status-badge">📦 Archived</span>
+                            <span class="badge badge-secondary status-badge">Archived</span>
                         @else
-                            <span class="badge badge-success status-badge">✅ Active</span>
+                            <span class="badge badge-success status-badge">Active</span>
                         @endif
                     </td>
                     <td>
@@ -185,24 +185,12 @@
 <div class="content-panel panel-enhanced">
     <div class="panel-header">
         <h2 class="panel-title">🔔 Recent Announcements Preview</h2>
-        <span class="panel-badge">Live Feed</span>
     </div>
     
     <div class="announcements-grid">
         @foreach($announcements->take(3) as $announcement)
         <div class="announcement-card {{ $announcement->priority === 'Urgent' ? 'urgent' : '' }}">
             <div class="card-header">
-                <div class="card-icon">
-                    @if($announcement->priority === 'Urgent')
-                        🚨
-                    @elseif($announcement->category === 'Important')
-                        ⚠️
-                    @elseif($announcement->category === 'Event')
-                        🎉
-                    @else
-                        📢
-                    @endif
-                </div>
                 <div class="card-meta">
                     <h3 class="card-title">{{ $announcement->title }}</h3>
                     <span class="card-time">{{ \Carbon\Carbon::parse($announcement->created_at)->diffForHumans() }}</span>
@@ -224,6 +212,10 @@
 
 <style>
 /* Simple Filter Bar */
+.panel-title {
+    margin: 15px 0;
+}
+
 .filter-bar-simple {
     display: flex;
     align-items: flex-end;
@@ -326,7 +318,7 @@
 
 .announcement-card {
     padding: 20px;
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    background: linear-gradient(135deg, #02509536 0%, #f8f9fa 100%);
     border-radius: 12px;
     border-left: 4px solid #2d5f8d;
     transition: all 0.3s ease;
@@ -341,6 +333,8 @@
 .announcement-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    background: #02509536;
+    
 }
 
 .card-header {
@@ -373,7 +367,7 @@
 
 .card-content {
     margin: 0 0 16px 0;
-    color: #495057;
+    color: #002d5aff;
     line-height: 1.6;
     font-size: 14px;
 }

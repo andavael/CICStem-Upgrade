@@ -137,7 +137,7 @@
                 <img src="{{ asset('assets/logo.png') }}" alt="CICStem Logo" class="brand-logo-img">
                 <div class="logo-text-wrapper">
                     <span class="logo-text"><span class="highlight">CICS</span>TEM UPGRADE</span>
-                    <span class="page-subtitle">@yield('page-title', 'Tutor Dashboard')</span>
+                    <span class="page-subtitle">Tutor Dashboard</span>
                 </div>
             </div>
 

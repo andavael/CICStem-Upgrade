@@ -1,7 +1,7 @@
 @extends('tutor.layouts.app')
 
 @section('title', 'Announcements')
-@section('page-title', 'Announcements')
+@section('page-title', 'Tutor Dashboard')
 
 @section('content')
 <div class="page-header">
