@@ -92,8 +92,8 @@
             {{-- Status --}}
             <div class="form-group">
                 <label for="status">Status <span class="required">*</span></label>
-                <select name="status" id="status" required>
-                    <option value="Scheduled" {{ old('status') === 'Scheduled' ? 'selected' : '' }}>Scheduled</option>
+                <select name="status" id="status">
+                    <option value="Scheduled" selected>Scheduled</option>
                     <option value="Ongoing" {{ old('status') === 'Ongoing' ? 'selected' : '' }}>Ongoing</option>
                     <option value="Completed" {{ old('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
                     <option value="Cancelled" {{ old('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
@@ -103,6 +103,17 @@
                 @enderror
             </div>
 
+            {{-- Google Meet Link (Optional) --}}
+            <div class="form-group form-grid-full">
+                <label for="google_meet_link">Google Meet Link (Optional)</label>
+                <input type="url" name="google_meet_link" id="google_meet_link" value="{{ old('google_meet_link') }}" placeholder="https://meet.google.com/xxx-yyyy-zzz">
+                <small style="color: #6c757d; font-size: 12px; margin-top: 4px; display: block;">
+                    Leave empty to auto-generate a placeholder link. You can update with the actual meeting link later.
+                </small>
+                @error('google_meet_link')
+                <div class="error-message show">{{ $message }}</div>
+                @enderror
+            </div>
             
             {{-- Description --}}
             <div class="form-group form-grid-full">
@@ -120,4 +131,27 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('session_date');
+    const timeInput = document.getElementById('session_time');
+    
+    function validateDateTime() {
+        if (!dateInput.value || !timeInput.value) return;
+        
+        const selectedDateTime = new Date(dateInput.value + 'T' + timeInput.value);
+        const now = new Date();
+        
+        if (selectedDateTime < now) {
+            timeInput.setCustomValidity('The selected date and time has already passed. Please choose a future date and time.');
+        } else {
+            timeInput.setCustomValidity('');
+        }
+    }
+    
+    dateInput.addEventListener('change', validateDateTime);
+    timeInput.addEventListener('change', validateDateTime);
+});
+</script>
 @endsection

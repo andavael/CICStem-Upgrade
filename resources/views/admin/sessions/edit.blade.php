@@ -26,7 +26,7 @@
             
             <div class="form-group">
                 <label for="session_date">Session Date <span class="required">*</span></label>
-                <input type="date" name="session_date" id="session_date" value="{{ old('session_date', $session->session_date->format('Y-m-d')) }}" required>
+                <input type="date" name="session_date" id="session_date" value="{{ old('session_date', $session->session_date->format('Y-m-d')) }}" min="{{ date('Y-m-d') }}" required>
                 @error('session_date')
                 <div class="error-message show">{{ $message }}</div>
                 @enderror
@@ -113,4 +113,30 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('session_date');
+    const timeInput = document.getElementById('session_time');
+    
+    function validateDateTime() {
+        if (!dateInput.value || !timeInput.value) return;
+        
+        const selectedDateTime = new Date(dateInput.value + 'T' + timeInput.value);
+        const now = new Date();
+        
+        if (selectedDateTime < now) {
+            timeInput.setCustomValidity('The selected date and time has already passed. Please choose a future date and time.');
+        } else {
+            timeInput.setCustomValidity('');
+        }
+    }
+    
+    dateInput.addEventListener('change', validateDateTime);
+    timeInput.addEventListener('change', validateDateTime);
+    
+    // Run validation on page load to catch any initial issues
+    validateDateTime();
+});
+</script>
 @endsection

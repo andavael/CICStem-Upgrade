@@ -30,8 +30,10 @@
             </label>
             <select name="status" class="filter-input" onchange="this.form.submit()">
                 <option value="">All Sessions</option>
-                <option value="upcoming" {{ request('status') === 'upcoming' ? 'selected' : '' }}>📅 Upcoming</option>
-                <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>✅ Completed</option>
+                <option value="Scheduled" {{ request('status') === 'Scheduled' ? 'selected' : '' }}>📅 Scheduled</option>
+                <option value="Ongoing" {{ request('status') === 'Ongoing' ? 'selected' : '' }}>▶️ Ongoing</option>
+                <option value="Completed" {{ request('status') === 'Completed' ? 'selected' : '' }}>✅ Completed</option>
+                <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>❌ Cancelled</option>
             </select>
         </div>
         
