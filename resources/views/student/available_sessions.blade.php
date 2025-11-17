@@ -45,7 +45,7 @@
             </span>
         </div>
     </div>
-
+    
     @if($sessions->count() > 0)
     <div class="session-cards-grid">
         @foreach($sessions as $session)
