@@ -12,3 +12,29 @@ A structured web-based platform designed to streamline scheduling, tutor managem
 - 📨 In-app notifications
 - 📄 Resume upload for tutor applicants (PDF only)
 - ⚙️ Simple and maintainable Laravel-based architecture
+
+  ## 📁 Project Structure
+ ```txt
+project-root/
+├── app/
+│   ├── Models/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   ├── Requests/
+│   │   └── Middleware/
+├── resources/
+│   └── views/
+│       ├── admin/
+│       ├── tutor/
+│       ├── student/
+│       └── layouts/
+├── public/
+│   └── css/
+├── routes/
+│   └── web.php
+└── database/
+    ├── migrations/
+    ├── seeders/
+    └── sql/
+```
+
