@@ -45,6 +45,5 @@ Please ensure the following are installed:
 - 🐘 PHP 8.1+
 -📦 Composer
 - 🐬 PostgreSQL
-- 🌐 Node.js & NPM (optional for asset management)
 - 🔧 Laravel 10 or later
 
