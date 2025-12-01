@@ -38,7 +38,7 @@ project-root/
     └── sql/
 ```
 
-# 1️⃣ Prerequisites
+## 1️⃣ Prerequisites
 
 Please ensure the following are installed:
 
@@ -52,27 +52,27 @@ Please ensure the following are installed:
    cd CICStem-Upgrade
  ```
 
-# 2️⃣ Install dependencies
+## 2️⃣ Install dependencies
 ```bash
 composer install
 npm install && npm run build  # if using front-end assets
 ```
 
-# 3️⃣ Copy .env.example to .env and configure your database credentials
+## 3️⃣ Copy .env.example to .env and configure your database credentials
 ```bash
 cp .env.example .env
 
 ```
-# 4️⃣ Generate application key
+## 4️⃣ Generate application key
 ```bash
 php artisan key:generate
 ```
 
-# 5️⃣ Run migrations (and seeders, if any)
+## 5️⃣ Run migrations (and seeders, if any)
 ```bash
 php artisan migrate
 ```
-# 6️⃣ Start the application (local dev)
+## 6️⃣ Start the application (local dev)
 ```bash
 php artisan serve
 ```
