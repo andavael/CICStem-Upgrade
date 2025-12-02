@@ -76,12 +76,33 @@ php artisan migrate
 ```bash
 php artisan serve
 ```
-# 🎯 Usage
-- Visit the app via your browser (e.g. http://localhost:8000)
-- Register as a Student or Tutor (or admin if you have credentials)
-- Tutors can apply and upload their resume (PDF), admins can approve or reject
-- Students can browse available tutoring sessions and enroll
-- Admins can manage schedules, approve tutors, send announcements, and review feedback
+# 🎯 Usage Overview
+
+Admins
+
+- Approve tutor applications
+
+- Manage announcements
+
+- Oversee schedules & conflicts
+
+- Monitor feedback
+
+Tutors
+
+- Submit applications and resumes
+
+- Manage assigned sessions
+
+- Receive notifications
+
+Students
+
+- Enroll in tutoring sessions
+
+- Receive updates
+
+- Provide feedback
 
 # ⚙️ Configuration
 - Database settings — configure in .env (DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD)
