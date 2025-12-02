@@ -100,5 +100,9 @@ See the included CHANGELOG.md for a history of changes and updates.
 
 # 🤝 Contributing
 Feel free to open issues or submit pull requests. Please ensure your code follows PSR-12 standards (or your coding style preferences), includes meaningful commit messages, and — if adding new features — updates any relevant documentation, migrations, or views.
+# 👥 Authors
+
+- Anthonina Daphneilla Vael
+- Justin Antenor
 
 
