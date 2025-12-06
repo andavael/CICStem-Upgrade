@@ -72,8 +72,8 @@
                 <label for="year_level">Year Level <span class="required">*</span></label>
                 <select name="year_level" id="year_level" required>
                     <option value="">Select Year Level</option>
-                    <option value="1st Year" {{ old('year_level') === '1st Year' ? 'selected' : '' }}>1st Year</option>
-                    <option value="2nd Year" {{ old('year_level') === '2nd Year' ? 'selected' : '' }}>2nd Year</option>
+                    <option value="First Year" {{ old('year_level') === 'First Year' ? 'selected' : '' }}>First Year</option>
+                    <option value="Second Year" {{ old('year_level') === 'Second Year' ? 'selected' : '' }}>Second Year</option>
                 </select>
                 @error('year_level')
                 <div class="error-message show">{{ $message }}</div>

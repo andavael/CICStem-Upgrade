@@ -9,106 +9,138 @@
 </div>
 
 <!-- Profile Information -->
-<div class="content-panel">
-    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #212529;">Profile Information</h2>
+<div class="content-panel" style="background: #ffffff; border: 2px solid #dee2e6; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <div style="background: linear-gradient(135deg, #2d5f8d 0%, #1a4366 100%); padding: 20px; border-radius: 8px 8px 0 0; margin: -1px -1px 24px -1px;">
+        <h2 style="font-size: 22px; font-weight: 700; margin: 0; color: #ffffff;">Personal Information</h2>
+    </div>
     
-    <form action="{{ route('student.profile.update') }}" method="POST">
-        @csrf
-        @method('PUT')
-        
-        <div class="form-grid">
-            <div class="form-group">
-                <label>First Name <span style="color: #dc3545;">*</span></label>
-                <input type="text" name="first_name" class="form-control" value="{{ old('first_name', $student->first_name) }}" required>
-                @error('first_name')
-                    <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
-                @enderror
+    <div style="padding: 0 24px 24px 24px;">
+        <form action="{{ route('student.profile.update') }}" method="POST">
+            @csrf
+            @method('PUT')
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>First Name <span style="color: #dc3545;">*</span></label>
+                    <input type="text" name="first_name" class="form-control" value="{{ old('first_name', $student->first_name) }}" required>
+                    @error('first_name')
+                        <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Middle Name</label>
+                    <input type="text" name="middle_name" class="form-control" value="{{ old('middle_name', $student->middle_name) }}">
+                    @error('middle_name')
+                        <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Last Name <span style="color: #dc3545;">*</span></label>
+                    <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $student->last_name) }}" required>
+                    @error('last_name')
+                        <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>SR Code</label>
+                    <input type="text" class="form-control" value="{{ $student->sr_code }}" disabled style="background: #e9ecef; cursor: not-allowed;">
+                    <small style="color: #6c757d; font-size: 12px; margin-top: 4px; display: block;">SR Code cannot be changed</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" value="{{ $student->email }}" disabled style="background: #e9ecef; cursor: not-allowed;">
+                    <small style="color: #6c757d; font-size: 12px; margin-top: 4px; display: block;">Email cannot be changed</small>
+                </div>
+
+                <div class="form-group">
+                    <label>Year Level</label>
+                    <input type="text" class="form-control" value="{{ $student->year_level }}" disabled style="background: #e9ecef; cursor: not-allowed;">
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Course Program <span style="color: #dc3545;">*</span></label>
+                    <input type="text" name="course_program" class="form-control" value="{{ old('course_program', $student->course_program) }}" required>
+                    @error('course_program')
+                        <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Middle Name</label>
-                <input type="text" name="middle_name" class="form-control" value="{{ old('middle_name', $student->middle_name) }}">
-                @error('middle_name')
-                    <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
-                @enderror
+            <div style="text-align: right; margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">Update Profile</button>
             </div>
-
-            <div class="form-group">
-                <label>Last Name <span style="color: #dc3545;">*</span></label>
-                <input type="text" name="last_name" class="form-control" value="{{ old('last_name', $student->last_name) }}" required>
-                @error('last_name')
-                    <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label>SR Code</label>
-                <input type="text" class="form-control" value="{{ $student->sr_code }}" disabled>
-            </div>
-
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" class="form-control" value="{{ $student->email }}" disabled>
-            </div>
-
-            <div class="form-group">
-                <label>Year Level</label>
-                <input type="text" class="form-control" value="{{ $student->year_level }}" disabled>
-            </div>
-
-            <div class="form-group" style="grid-column: 1 / -1;">
-                <label>Course Program <span style="color: #dc3545;">*</span></label>
-                <input type="text" name="course_program" class="form-control" value="{{ old('course_program', $student->course_program) }}" required>
-                @error('course_program')
-                    <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
-                @enderror
-            </div>
-        </div>
-
-        <div style="text-align: right; margin-top: 24px;">
-            <button type="submit" class="btn btn-primary">Update Profile</button>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
 
 <!-- Change Password -->
-<div class="content-panel">
-    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #212529;">Change Password</h2>
+<div class="content-panel" style="background: #ffffff; border: 2px solid #dee2e6; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <div style="background: linear-gradient(135deg, #2d5f8d 0%, #1a4366 100%); padding: 20px; border-radius: 8px 8px 0 0; margin: -1px -1px 24px -1px;">
+        <h2 style="font-size: 22px; font-weight: 700; margin: 0; color: #ffffff;">Change Password</h2>
+    </div>
     
-    <form action="{{ route('student.profile.password') }}" method="POST">
-        @csrf
-        @method('PUT')
-        
-        <div class="form-grid">
-            <div class="form-group" style="grid-column: 1 / -1;">
-                <label>Current Password <span style="color: #dc3545;">*</span></label>
-                <input type="password" name="current_password" class="form-control" required>
-                @error('current_password')
-                    <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="form-group">
-                <label>New Password <span style="color: #dc3545;">*</span></label>
-                <input type="password" name="password" class="form-control" required>
-                <div style="font-size: 13px; color: #6c757d; margin-top: 6px;">
-                    Minimum 8 characters
+    <div style="padding: 0 24px 24px 24px;">
+        <form action="{{ route('student.profile.password') }}" method="POST">
+            @csrf
+            @method('PUT')
+            
+            <div class="form-grid">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Current Password <span style="color: #dc3545;">*</span></label>
+                    <input type="password" name="current_password" class="form-control" required>
+                    @error('current_password')
+                        <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
                 </div>
-                @error('password')
-                    <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
-                @enderror
+
+                <div class="form-group">
+                    <label>New Password <span style="color: #dc3545;">*</span></label>
+                    <input type="password" name="password" class="form-control" required>
+                    <div style="font-size: 12px; color: #6c757d; margin-top: 4px;">
+                        Minimum 8 characters
+                    </div>
+                    @error('password')
+                        <div style="color: #dc3545; font-size: 13px; margin-top: 6px;">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm New Password <span style="color: #dc3545;">*</span></label>
+                    <input type="password" name="password_confirmation" class="form-control" required>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Confirm New Password <span style="color: #dc3545;">*</span></label>
-                <input type="password" name="password_confirmation" class="form-control" required>
+            <div style="text-align: right; margin-top: 24px;">
+                <button type="submit" class="btn btn-primary">Change Password</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Account Information -->
+<div class="content-panel" style="background: #ffffff; border: 2px solid #dee2e6; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <div style="background: linear-gradient(135deg, #2d5f8d 0%, #1a4366 100%); padding: 20px; border-radius: 8px 8px 0 0; margin: -1px -1px 24px -1px;">
+        <h2 style="font-size: 22px; font-weight: 700; margin: 0; color: #ffffff;">Account Information</h2>
+    </div>
+    
+    <div style="padding: 0 24px 24px 24px;">
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef;">
+            <div style="display: grid; gap: 12px;">
+                <div style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #dee2e6;">
+                    <strong style="color: #495057;">Member Since:</strong>
+                    <span style="color: #212529;">{{ $student->created_at->format('F d, Y') }}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 12px 0;">
+                    <strong style="color: #495057;">Last Updated:</strong>
+                    <span style="color: #212529;">{{ $student->updated_at->format('F d, Y h:i A') }}</span>
+                </div>
             </div>
         </div>
-
-        <div style="text-align: right; margin-top: 24px;">
-            <button type="submit" class="btn btn-primary">Change Password</button>
-        </div>
-    </form>
+    </div>
 </div>
 
 <style>

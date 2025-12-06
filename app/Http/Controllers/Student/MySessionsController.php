@@ -10,14 +10,16 @@ use Carbon\Carbon;
 class MySessionsController extends Controller
 {
     /**
-     * Display student's enrolled sessions
+     * Display student's enrolled sessions (only approved, exclude Pending)
      */
     public function index(Request $request)
     {
         $student = Auth::guard('student')->user();
         
-        // Base query
-        $query = $student->sessions()->with('tutor');
+        // Base query - EXCLUDE Pending attendance status
+        $query = $student->sessions()
+            ->with('tutor')
+            ->wherePivot('attendance_status', '!=', 'Pending');
 
         // Apply status filter
         if ($request->filled('status')) {
@@ -58,9 +60,10 @@ class MySessionsController extends Controller
     {
         $student = Auth::guard('student')->user();
         
-        // Get session with pivot data
+        // Get session with pivot data - EXCLUDE Pending
         $session = $student->sessions()
             ->with('tutor')
+            ->wherePivot('attendance_status', '!=', 'Pending')
             ->where('tutor_sessions.id', $sessionId)
             ->firstOrFail();
 
@@ -70,8 +73,10 @@ class MySessionsController extends Controller
             ->first()
             ->pivot;
 
-        // Get other enrolled students count
-        $enrolledCount = $session->students()->count();
+        // Get other enrolled students count (only approved)
+        $enrolledCount = $session->students()
+            ->wherePivot('attendance_status', '!=', 'Pending')
+            ->count();
 
         return view('student.session_detail', compact(
             'session',

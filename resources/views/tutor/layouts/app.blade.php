@@ -107,25 +107,20 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Notification badge */
-        .notification-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
+        /* Notification badge - inline style (MUST match student exactly) */
+        .notification-badge-inline {
+            display: inline-block;
             background: #dc3545;
             color: white;
-            border-radius: 50%;
-            width: 20px;
+            border-radius: 12px;
+            min-width: 20px;
             height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 0 6px;
+            margin-left: 8px;
             font-size: 11px;
             font-weight: 700;
-        }
-
-        .sidebar-item a {
-            position: relative;
+            line-height: 20px;
+            text-align: center;
         }
     </style>
 </head>
@@ -155,27 +150,24 @@
         <aside class="tutor-sidebar">
             <ul class="sidebar-menu">
                 <li class="sidebar-item {{ request()->routeIs('tutor.dashboard') ? 'active' : '' }}">
-                    <a href="{{ route('tutor.dashboard') }}">📊 Dashboard</a>
+                    <a href="{{ route('tutor.dashboard') }}">Dashboard</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('tutor.sessions*') ? 'active' : '' }}">
-                    <a href="{{ route('tutor.sessions.index') }}">📚 Sessions</a>
+                    <a href="{{ route('tutor.sessions.index') }}">Sessions</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('tutor.notifications*') ? 'active' : '' }}">
-                    <a href="{{ route('tutor.notifications.index') }}" style="position: relative;">
-                        🔔 Notifications
-                        @php
-                            $unreadCount = \App\Models\Notification::where('tutor_id', Auth::guard('tutor')->id())->where('is_read', false)->count();
-                        @endphp
-                        @if($unreadCount > 0)
-                            <span class="notification-badge">{{ $unreadCount > 9 ? '9+' : $unreadCount }}</span>
+                    <a href="{{ route('tutor.notifications.index') }}">
+                        Notifications
+                        @if(isset($unreadCount) && $unreadCount > 0)
+                            <span class="notification-badge-inline">{{ $unreadCount }}</span>
                         @endif
                     </a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('tutor.announcements*') ? 'active' : '' }}">
-                    <a href="{{ route('tutor.announcements.index') }}">📢 Announcements</a>
+                    <a href="{{ route('tutor.announcements.index') }}">Announcements</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('tutor.profile*') ? 'active' : '' }}">
-                    <a href="{{ route('tutor.profile') }}">👤 Profile</a>
+                    <a href="{{ route('tutor.profile') }}">Profile</a>
                 </li>
             </ul>
         </aside>
@@ -250,7 +242,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                     </svg>
-                    <a href="https://facebook.com/CICCStudentCouncil" target="_blank">CICC-Student Council</a>
+                    <a href="https://www.facebook.com/CICSStudentCouncil" target="_blank">CICS-Student Council</a>
                 </div>
             </div>
         </div>

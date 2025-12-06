@@ -74,7 +74,18 @@
                         </td>
                         <td>{{ $student->sr_code }}</td>
                         <td>{{ $student->email }}</td>
-                        <td><span class="year-badge">{{ $student->year_level }}</span></td>
+                        <td>
+                            <span class="year-badge">
+                                @php
+                                    $yearLevel = $student->year_level;
+                                    if (stripos($yearLevel, 'Fourth Year') !== false || stripos($yearLevel, '4th Year') !== false) {
+                                        echo 'Fourth Year';
+                                    } else {
+                                        echo $yearLevel;
+                                    }
+                                @endphp
+                            </span>
+                        </td>
                         <td><span class="course-badge">{{ $student->course_program }}</span></td>
                         <td>
                             @if($student->status === 'Active')
@@ -85,7 +96,7 @@
                         </td>
                         <td>
                             <div class="action-btns">
-                                <a href="{{ route('admin.students.show', $student) }}" class="btn btn-view btn-sm btn-icon-text">
+                                <a href="{{ route('admin.students.show', $student) }}" class="btn btn-primary btn-sm btn-icon-text">
                                     View
                                 </a>
                                 <form action="{{ route('admin.students.toggle-status', $student) }}" method="POST" style="display: inline;">
@@ -143,7 +154,18 @@
                         </td>
                         <td>{{ $tutor->sr_code }}</td>
                         <td>{{ $tutor->email }}</td>
-                        <td><span class="year-badge">{{ $tutor->year_level }}</span></td>
+                        <td>
+                            <span class="year-badge">
+                                @php
+                                    $yearLevel = $tutor->year_level;
+                                    if (stripos($yearLevel, 'Fourth Year') !== false || stripos($yearLevel, '4th Year') !== false) {
+                                        echo 'Fourth Year';
+                                    } else {
+                                        echo $yearLevel;
+                                    }
+                                @endphp
+                            </span>
+                        </td>
                         <td><span class="badge badge-success gwa-badge">{{ $tutor->gwa }}</span></td>
                         <td>
                             @if($tutor->status === 'Active')
@@ -160,27 +182,29 @@
                             @endif
                         </td>
                         <td>
-                            <div class="action-btns">
-                                <a href="{{ route('admin.tutors.show', $tutor) }}" class="btn btn-view btn-sm btn-icon-text">
+                            <div class="action-btns-tutor">
+                                <a href="{{ route('admin.tutors.show', $tutor) }}" class="btn btn-primary btn-sm btn-icon-text">
                                     View
                                 </a>
-                                @if(!$tutor->is_approved)
-                                <form action="{{ route('admin.tutors.approve', $tutor) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-approve btn-sm">✅ Approve</button>
-                                </form>
-                                <form action="{{ route('admin.tutors.reject', $tutor) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="btn btn-delete btn-sm">❌ Reject</button>
-                                </form>
-                                @else
-                                <form action="{{ route('admin.tutors.toggle-status', $tutor) }}" method="POST" style="display: inline;">
-                                    @csrf
-                                    <button type="submit" class="btn {{ $tutor->status === 'Active' ? 'btn-delete' : 'btn-approve' }} btn-sm">
-                                        {{ $tutor->status === 'Active' ? 'Deactivate' : 'Activate' }}
-                                    </button>
-                                </form>
-                                @endif
+                                <div class="action-btns-row">
+                                    @if(!$tutor->is_approved)
+                                    <form action="{{ route('admin.tutors.approve', $tutor) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-approve btn-sm">Approve</button>
+                                    </form>
+                                    <form action="{{ route('admin.tutors.reject', $tutor) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn btn-delete btn-sm">Reject</button>
+                                    </form>
+                                    @else
+                                    <form action="{{ route('admin.tutors.toggle-status', $tutor) }}" method="POST" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn {{ $tutor->status === 'Active' ? 'btn-delete' : 'btn-approve' }} btn-sm">
+                                            {{ $tutor->status === 'Active' ? 'Deactivate' : 'Activate' }}
+                                        </button>
+                                    </form>
+                                    @endif
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -336,6 +360,42 @@
     gap: 4px;
 }
 
+/* Action buttons for tutors - separate layout */
+.action-btns-tutor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.action-btns-tutor > .btn {
+    width: 100%;
+}
+
+.action-btns-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.action-btns-row form {
+    flex: 1;
+}
+
+.action-btns-row .btn {
+    width: 100%;
+}
+
+/* Regular action buttons for students */
+.action-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 /* Table Enhancements */
 .panel-enhanced {
     border: 1px solid #e9ecef;
@@ -424,10 +484,17 @@
     }
     
     .action-btns .btn {
-        width: auto;       /* only as wide as content */
-        padding: 8px 16px; /* adjust button padding */
+        width: auto;
+        padding: 8px 16px;
     }
-
+    
+    .action-btns-tutor {
+        width: 100%;
+    }
+    
+    .action-btns-row {
+        width: 100%;
+    }
 }
 </style>
 @endsection

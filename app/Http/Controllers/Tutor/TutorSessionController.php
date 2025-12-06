@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Session;
 use App\Models\Student;
+use App\Models\StudentNotification;
 use Carbon\Carbon;
 
 class TutorSessionController extends Controller
@@ -188,7 +189,7 @@ class TutorSessionController extends Controller
     }
 
     /**
-     * Approve student application
+     * Approve student application (Changed from "Present" to "Approved" logic)
      */
     public function approveStudent(Request $request, $sessionId, $studentId)
     {
@@ -199,11 +200,25 @@ class TutorSessionController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Update attendance status to Present (approved)
         $session->students()->updateExistingPivot($studentId, [
             'attendance_status' => 'Present'
         ]);
 
-        return redirect()->back()->with('success', 'Student application approved');
+        // NOW send notification to the student when approved
+        $sessionDate = $session->session_date->format('M d, Y');
+        $sessionTime = substr($session->session_time, 0, 5);
+        
+        StudentNotification::create([
+            'student_id' => $studentId,
+            'type' => 'enrollment_approved',
+            'title' => 'Enrollment Request Approved!',
+            'message' => "Great news! Your enrollment request for '{$session->subject} ({$session->session_code})' has been approved by the tutor. The session is scheduled for {$sessionDate} at {$sessionTime}. See you there!",
+            'related_id' => $session->id,
+            'is_read' => false,
+        ]);
+
+        return redirect()->back()->with('success', 'Student enrollment approved and notified');
     }
 
     /**
@@ -218,8 +233,25 @@ class TutorSessionController extends Controller
             abort(403, 'Unauthorized');
         }
 
+        // Get student info before removing
+        $student = Student::findOrFail($studentId);
+
+        // Remove student from session
         $session->students()->detach($studentId);
 
-        return redirect()->back()->with('success', 'Student application rejected');
+        // Send notification to the student
+        $sessionDate = $session->session_date->format('M d, Y');
+        $sessionTime = substr($session->session_time, 0, 5);
+        
+        StudentNotification::create([
+            'student_id' => $studentId,
+            'type' => 'enrollment_rejected',
+            'title' => 'Enrollment Request Not Approved',
+            'message' => "Unfortunately, your enrollment request for '{$session->subject} ({$session->session_code})' scheduled for {$sessionDate} at {$sessionTime} was not approved. Please check for other available sessions.",
+            'related_id' => $session->id,
+            'is_read' => false,
+        ]);
+
+        return redirect()->back()->with('success', 'Student enrollment request rejected and notified');
     }
 }

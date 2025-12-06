@@ -58,11 +58,9 @@
             <div class="form-group">
                 <label for="year_level">Year Level <span class="required">*</span></label>
                 <select name="year_level" id="year_level" required>
-                    <option value="1st Year" {{ old('year_level', $session->year_level) === '1st Year' ? 'selected' : '' }}>1st Year</option>
-                    <option value="2nd Year" {{ old('year_level', $session->year_level) === '2nd Year' ? 'selected' : '' }}>2nd Year</option>
-                    <option value="3rd Year" {{ old('year_level', $session->year_level) === '3rd Year' ? 'selected' : '' }}>3rd Year</option>
-                    <option value="4th Year" {{ old('year_level', $session->year_level) === '4th Year' ? 'selected' : '' }}>4th Year</option>
-                    <option value="All" {{ old('year_level', $session->year_level) === 'All' ? 'selected' : '' }}>All Year Levels</option>
+                    <option value="">Select Year Level</option>
+                    <option value="First Year" {{ old('year_level', $session->year_level) === 'First Year' ? 'selected' : '' }}>First Year</option>
+                    <option value="Second Year" {{ old('year_level', $session->year_level) === 'Second Year' ? 'selected' : '' }}>Second Year</option>
                 </select>
                 @error('year_level')
                 <div class="error-message show">{{ $message }}</div>
@@ -90,9 +88,13 @@
                 @enderror
             </div>
             
+            {{-- Google Meet Link (Optional) --}}
             <div class="form-group form-grid-full">
-                <label for="google_meet_link">Google Meet Link <span class="required">*</span></label>
-                <input type="url" name="google_meet_link" id="google_meet_link" value="{{ old('google_meet_link', $session->google_meet_link) }}" required>
+                <label for="google_meet_link">Google Meet Link (Optional)</label>
+                <input type="url" name="google_meet_link" id="google_meet_link" value="{{ old('google_meet_link', $session->google_meet_link) }}" placeholder="https://meet.google.com/xxx-yyyy-zzz">
+                <small style="color: #6c757d; font-size: 12px; margin-top: 4px; display: block;">
+                    Leave empty to auto-generate a placeholder link. You can update with the actual meeting link later.
+                </small>
                 @error('google_meet_link')
                 <div class="error-message show">{{ $message }}</div>
                 @enderror

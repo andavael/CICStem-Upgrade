@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Tutor;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Notification;
+use App\Models\TutorNotification;
 
 class TutorNotificationController extends Controller
 {
@@ -16,11 +16,11 @@ class TutorNotificationController extends Controller
     {
         $tutor = Auth::guard('tutor')->user();
         
-        $notifications = Notification::where('tutor_id', $tutor->id)
+        $notifications = TutorNotification::where('tutor_id', $tutor->id)
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        $unreadCount = Notification::where('tutor_id', $tutor->id)
+        $unreadCount = TutorNotification::where('tutor_id', $tutor->id)
             ->unread()
             ->count();
 
@@ -34,7 +34,7 @@ class TutorNotificationController extends Controller
     {
         $tutor = Auth::guard('tutor')->user();
         
-        $notification = Notification::where('tutor_id', $tutor->id)
+        $notification = TutorNotification::where('tutor_id', $tutor->id)
             ->findOrFail($id);
 
         $notification->markAsRead();
@@ -49,7 +49,7 @@ class TutorNotificationController extends Controller
     {
         $tutor = Auth::guard('tutor')->user();
         
-        Notification::where('tutor_id', $tutor->id)
+        TutorNotification::where('tutor_id', $tutor->id)
             ->unread()
             ->update([
                 'is_read' => true,
@@ -66,11 +66,25 @@ class TutorNotificationController extends Controller
     {
         $tutor = Auth::guard('tutor')->user();
         
-        $notification = Notification::where('tutor_id', $tutor->id)
+        $notification = TutorNotification::where('tutor_id', $tutor->id)
             ->findOrFail($id);
 
         $notification->delete();
 
         return redirect()->back()->with('success', 'Notification deleted');
+    }
+
+    /**
+     * Get unread count (for AJAX requests)
+     */
+    public function unreadCount()
+    {
+        $tutor = Auth::guard('tutor')->user();
+        
+        $count = TutorNotification::where('tutor_id', $tutor->id)
+            ->unread()
+            ->count();
+
+        return response()->json(['count' => $count]);
     }
 }

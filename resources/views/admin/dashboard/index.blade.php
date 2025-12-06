@@ -23,10 +23,9 @@
     </div>
 </div>
 
-<!-- Statistics Cards -->
+<!-- Statistics Cards - All Blue -->
 <div class="stats-grid">
     <div class="stat-card stat-card-animated">
-        <div class="stat-icon">👨‍🎓</div>
         <div class="stat-content">
             <div class="stat-label">Total Students</div>
             <div class="stat-value">{{ $stats['total_students'] }}</div>
@@ -34,8 +33,7 @@
         </div>
     </div>
     
-    <div class="stat-card stat-card-animated success">
-        <div class="stat-icon">👨‍🏫</div>
+    <div class="stat-card stat-card-animated">
         <div class="stat-content">
             <div class="stat-label">Total Tutors</div>
             <div class="stat-value">{{ $stats['total_tutors'] }}</div>
@@ -43,17 +41,15 @@
         </div>
     </div>
     
-    <div class="stat-card stat-card-animated warning">
-        <div class="stat-icon">📚</div>
+    <div class="stat-card stat-card-animated">
         <div class="stat-content">
             <div class="stat-label">Total Sessions</div>
             <div class="stat-value">{{ $stats['total_sessions'] }}</div>
-            <div class="stat-description">🔜 {{ $stats['upcoming_sessions'] }} upcoming</div>
+            <div class="stat-description">📆 {{ $stats['upcoming_sessions'] }} upcoming</div>
         </div>
     </div>
     
-    <div class="stat-card stat-card-animated info">
-        <div class="stat-icon">📢</div>
+    <div class="stat-card stat-card-animated">
         <div class="stat-content">
             <div class="stat-label">Announcements</div>
             <div class="stat-value">{{ $stats['total_announcements'] }}</div>
@@ -190,20 +186,20 @@
                     <td>
                         <div class="date-cell">
                             <div class="date-primary">{{ \Carbon\Carbon::parse($session->session_date)->format('M d, Y') }}</div>
-                            <div class="date-secondary">⏰ {{ $session->session_time }}</div>
+                            <div class="date-secondary">{{ $session->session_time }}</div>
                         </div>
                     </td>
                     <td>{{ $session->tutor ? $session->tutor->full_name : 'N/A' }}</td>
                     <td><span class="year-badge">{{ $session->year_level }}</span></td>
                     <td>
                         @if($session->status === 'Scheduled')
-                            <span class="badge badge-info status-badge">📅 {{ $session->status }}</span>
+                            <span class="badge badge-info status-badge">{{ $session->status }}</span>
                         @elseif($session->status === 'Completed')
-                            <span class="badge badge-success status-badge">✅ {{ $session->status }}</span>
+                            <span class="badge badge-success status-badge">{{ $session->status }}</span>
                         @elseif($session->status === 'Cancelled')
-                            <span class="badge badge-danger status-badge">❌ {{ $session->status }}</span>
+                            <span class="badge badge-danger status-badge">{{ $session->status }}</span>
                         @else
-                            <span class="badge badge-warning status-badge">⚠️ {{ $session->status }}</span>
+                            <span class="badge badge-warning status-badge">{{ $session->status }}</span>
                         @endif
                     </td>
                 </tr>
@@ -230,7 +226,6 @@
     <div class="year-distribution-grid">
         @foreach($studentsByYear as $yearData)
         <div class="year-card">
-            <div class="year-icon">🎓</div>
             <div class="year-label">{{ $yearData->year_level }}</div>
             <div class="year-count">{{ $yearData->count }}</div>
             <div class="year-description">students</div>
@@ -244,9 +239,9 @@
     </div>
     @endif
 </div>
-
 <style>
-/* Enhanced Stat Cards */
+
+/* Enhanced Stat Cards - All Blue */
 .stat-card-animated {
     position: relative;
     overflow: hidden;
@@ -480,7 +475,7 @@
 .year-card {
     text-align: center;
     padding: 28px 20px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: linear-gradient(135deg, #2d5f8d 0%, #1e3a5f 100%);
     border-radius: 16px;
     border: 2px solid #dee2e6;
     transition: all 0.3s ease;
@@ -499,7 +494,7 @@
 
 .year-label {
     font-size: 14px;
-    color: #6c757d;
+    color: #ffffffff;
     margin-bottom: 8px;
     font-weight: 500;
 }
@@ -507,13 +502,13 @@
 .year-count {
     font-size: 36px;
     font-weight: 700;
-    color: #2d5f8d;
+    color: #ffffffff;
     margin-bottom: 4px;
 }
 
 .year-description {
     font-size: 13px;
-    color: #6c757d;
+    color: #ffffffff;
 }
 
 /* Empty State Enhanced */

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Announcement;
+use App\Models\StudentNotification;
+use App\Models\Student;
 
 class TutorAnnouncementController extends Controller
 {
@@ -55,7 +57,12 @@ class TutorAnnouncementController extends Controller
         // Add the tutor ID to track who created it
         $validated['created_by_tutor_id'] = $tutor->id;
         
-        Announcement::create($validated);
+        $announcement = Announcement::create($validated);
+        
+        // Notify students if priority is Urgent and audience includes Students
+        if ($validated['priority'] === 'Urgent' && in_array($validated['target_audience'], ['All', 'Students'])) {
+            $this->notifyStudentsOfUrgentAnnouncement($announcement);
+        }
         
         return redirect()->route('tutor.announcements.index')
             ->with('success', 'Announcement posted successfully');
@@ -90,6 +97,8 @@ class TutorAnnouncementController extends Controller
             abort(403, 'Unauthorized action.');
         }
         
+        $oldPriority = $announcement->priority;
+        
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -100,9 +109,40 @@ class TutorAnnouncementController extends Controller
         
         $announcement->update($validated);
         
+        // Notify students if priority was changed to Urgent and audience includes Students
+        if ($validated['priority'] === 'Urgent' && 
+            $oldPriority !== 'Urgent' && 
+            in_array($validated['target_audience'], ['All', 'Students'])) {
+            $this->notifyStudentsOfUrgentAnnouncement($announcement);
+        }
+        
         return redirect()->route('tutor.announcements.index')
             ->with('success', 'Announcement updated successfully');
     }
 
+    /**
+     * Notify all students about urgent announcements
+     */
+    private function notifyStudentsOfUrgentAnnouncement($announcement)
+    {
+        // Get all active students
+        $studentIds = Student::where('status', 'Active')->pluck('id')->toArray();
+        
+        if (empty($studentIds)) {
+            return;
+        }
 
+        // Truncate content if too long
+        $message = strlen($announcement->content) > 200 
+            ? substr($announcement->content, 0, 200) . '...' 
+            : $announcement->content;
+
+        StudentNotification::notifyStudents(
+            $studentIds,
+            'urgent_announcement',
+            'URGENT: ' . $announcement->title,  // ⭐ REMOVED EMOJI
+            $message,
+            $announcement->id
+        );
+    }
 }

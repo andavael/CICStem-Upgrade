@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
     <h1 class="page-title">Hello, {{ Str::title($tutor->first_name) }}!👋</h1>
 </div>
 
-<!-- Statistics -->
+<!-- Statistics - All Blue -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-label">Total Sessions</div>
@@ -20,19 +20,19 @@ use Illuminate\Support\Str;
         <div class="stat-description">All time sessions</div>
     </div>
 
-    <div class="stat-card success">
+    <div class="stat-card">
         <div class="stat-label">Completed Sessions</div>
         <div class="stat-value">{{ $completedSessions }}</div>
         <div class="stat-description">Successfully finished</div>
     </div>
 
-    <div class="stat-card warning">
+    <div class="stat-card">
         <div class="stat-label">Upcoming Sessions</div>
         <div class="stat-value">{{ $upcomingCount }}</div>
         <div class="stat-description">Scheduled ahead</div>
     </div>
 
-    <div class="stat-card info">
+    <div class="stat-card">
         <div class="stat-label">Total Students</div>
         <div class="stat-value">{{ $totalStudents }}</div>
         <div class="stat-description">Unique students taught</div>
@@ -43,7 +43,7 @@ use Illuminate\Support\Str;
 @if($unreadNotifications > 0 || $recentNotifications->count() > 0)
 <div class="content-panel">
     <h2 style="font-size: 24px; font-weight: 600; margin-bottom: 20px; color: #212529; display: flex; align-items: center; justify-content: space-between;">
-        <span>🔔 Recent Notifications</span>
+        <span>Recent Notifications</span>
         @if($unreadNotifications > 0)
         <span class="badge badge-danger">{{ $unreadNotifications }} New</span>
         @endif
@@ -53,19 +53,6 @@ use Illuminate\Support\Str;
         @foreach($recentNotifications as $notification)
         <div class="notification-card-mini {{ $notification->is_read ? 'read' : 'unread' }}">
             <div style="display: flex; gap: 12px; align-items: start;">
-                <div class="notification-icon-mini">
-                    @if($notification->type === 'student_enrollment')
-                        👤
-                    @elseif($notification->type === 'session_update')
-                        📝
-                    @elseif($notification->type === 'session_cancellation')
-                        ❌
-                    @elseif($notification->type === 'session_reschedule')
-                        📅
-                    @else
-                        🔔
-                    @endif
-                </div>
                 <div style="flex: 1;">
                     <div style="font-weight: 600; color: #212529; margin-bottom: 4px;">{{ $notification->title }}</div>
                     <div style="font-size: 14px; color: #495057;">{{ Str::limit($notification->message, 100) }}</div>
@@ -79,7 +66,7 @@ use Illuminate\Support\Str;
         @endforeach
 
         <div style="text-align: center; margin-top: 20px;">
-            <a href="{{ route('tutor.notifications') }}" class="btn btn-secondary">View All Notifications</a>
+            <a href="{{ route('tutor.notifications.index') }}" class="btn btn-secondary">View All Notifications</a>
         </div>
     @endif
 </div>

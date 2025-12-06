@@ -7,39 +7,40 @@
 <div class="page-header">
     <h1 class="page-title">📖 Session Details</h1>
     <div class="page-actions">
-        <a href="{{ route('student.my-sessions.index') }}" class="btn btn-secondary">
+        <a href="{{ route('student.my-sessions.index') }}" class="btn btn-action btn-secondary-action">
             Back to My Sessions
         </a>
     </div>
 </div>
 
 <!-- Session Information -->
-<div class="content-panel">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h2 style="font-size: 24px; font-weight: 600; margin: 0; color: #212529;">Session Information</h2>
+<div class="content-panel" style="background: #ffffff; border: 2px solid #dee2e6; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+    <div style="background: linear-gradient(135deg, #2d5f8d 0%, #1a4366 100%); padding: 20px; border-radius: 8px 8px 0 0; margin: -1px -1px 24px -1px; display: flex; justify-content: space-between; align-items: center;">
+        <h2 style="font-size: 22px; font-weight: 700; margin: 0; color: #ffffff;">Session Information</h2>
         
         <!-- Session Status Badge -->
         <div>
             @if($session->status === 'Scheduled')
                 <span class="badge badge-info" style="font-size: 14px; padding: 8px 16px;">
-                    📅 {{ $session->status }}
+                    {{ $session->status }}
                 </span>
             @elseif($session->status === 'Ongoing')
                 <span class="badge badge-warning" style="font-size: 14px; padding: 8px 16px;">
-                    ▶️ {{ $session->status }}
+                    {{ $session->status }}
                 </span>
             @elseif($session->status === 'Completed')
                 <span class="badge badge-success" style="font-size: 14px; padding: 8px 16px;">
-                    ✅ {{ $session->status }}
+                    {{ $session->status }}
                 </span>
             @else
                 <span class="badge badge-danger" style="font-size: 14px; padding: 8px 16px;">
-                    ❌ {{ $session->status }}
+                    {{ $session->status }}
                 </span>
             @endif
         </div>
     </div>
     
+    <div style="padding: 0 24px 24px 24px;">
     <div class="form-grid">
         <div class="form-group">
             <label>Subject</label>
@@ -113,11 +114,11 @@
             <label>Your Attendance Status</label>
             <div class="info-box">
                 @if($enrollment->attendance_status === 'Present')
-                    <span class="badge badge-success">✅ Present</span>
+                    <span class="badge badge-success">Present</span>
                 @elseif($enrollment->attendance_status === 'Absent')
-                    <span class="badge badge-danger">❌ Absent</span>
+                    <span class="badge badge-danger">Absent</span>
                 @else
-                    <span class="badge badge-secondary">⏳ Pending</span>
+                    <span class="badge badge-secondary">Pending</span>
                 @endif
             </div>
         </div>
@@ -152,15 +153,20 @@
             Enrolled on {{ \Carbon\Carbon::parse($enrollment->enrolled_at)->format('F d, Y \a\t h:i A') }}
         </div>
     </div>
+    </div>
 </div>
 
 <!-- Action Buttons -->
 @if($session->status === 'Scheduled' && \Carbon\Carbon::parse($session->session_date)->isFuture())
-<div class="content-panel" style="border-left: 4px solid #ffc107;">
-    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 20px; color: #212529;">⚙️ Actions</h2>
+<div class="content-panel" style="background: #ffffff; border: 2px solid #dee2e6; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #ffc107;">
+    <div style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); padding: 20px; border-radius: 8px 8px 0 0; margin: -1px -1px 24px -1px;">
+        <h2 style="font-size: 22px; font-weight: 700; margin: 0; color: #212529;">⚙️ Actions</h2>
+    </div>
+    
+    <div style="padding: 0 24px 24px 24px;">
     
     <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-        <a href="{{ $session->google_meet_link }}" target="_blank" class="btn btn-primary">
+        <a href="{{ $session->google_meet_link }}" target="_blank" class="btn btn-action btn-primary-action">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                 <polyline points="15 3 21 3 21 9"></polyline>
@@ -172,7 +178,7 @@
         <form action="{{ route('student.available-sessions.unenroll', $session->id) }}" method="POST" style="display: inline;">
             @csrf
             @method('DELETE')
-            <button type="submit" class="btn btn-unenroll" onclick="return confirm('Are you sure you want to unenroll from this session?')">
+            <button type="submit" class="btn btn-action btn-danger-action" onclick="return confirm('Are you sure you want to unenroll from this session?')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="15" y1="9" x2="9" y2="15"></line>
@@ -182,12 +188,17 @@
             </button>
         </form>
     </div>
+    </div>
 </div>
 @endif
 
 <!-- Tips for Students -->
-<div class="content-panel" style="background: linear-gradient(135deg, #e3f2fd 0%, #f0f7ff 100%); border-left: 4px solid #2d5f8d;">
-    <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 16px; color: #1e3a5f;">💡 Session Tips</h2>
+<div class="content-panel" style="background: #ffffff; border: 2px solid #dee2e6; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-left: 4px solid #2d5f8d;">
+    <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 20px; border-radius: 8px 8px 0 0; margin: -1px -1px 24px -1px;">
+        <h2 style="font-size: 22px; font-weight: 700; margin: 0; color: #1e3a5f;">💡 Session Tips</h2>
+    </div>
+    
+    <div style="padding: 0 24px 24px 24px;">
     
     <ul style="margin: 0; padding-left: 24px; color: #1e3a5f; line-height: 1.8;">
         <li>Join the session 5 minutes before the scheduled time</li>
@@ -199,6 +210,7 @@
         <li>Don't forget to provide feedback about this session!</li>
         @endif
     </ul>
+    </div>
 </div>
 
 <style>
@@ -226,23 +238,51 @@
     border: 1px solid #dee2e6;
 }
 
-.btn-unenroll {
-    background: #dc3545;
-    color: white;
-    border: none;
+.btn-action {
     padding: 10px 20px;
     border-radius: 8px;
+    font-size: 14px;
     font-weight: 500;
+    border: none;
     cursor: pointer;
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
+    gap: 6px;
+    text-decoration: none;
 }
 
-.btn-unenroll:hover {
-    background: #c82333;
+.btn-primary-action {
+    background: linear-gradient(135deg, #2d5f8d 0%, #1a4366 100%);
+    color: white;
+}
+
+.btn-primary-action:hover {
+    background: linear-gradient(135deg, #1a4366 0%, #0d2235 100%);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 4px 12px rgba(45, 95, 141, 0.3);
+}
+
+.btn-secondary-action {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+}
+
+.btn-secondary-action:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #343a40 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+}
+
+.btn-danger-action {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+}
+
+.btn-danger-action:hover {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 @media (max-width: 768px) {

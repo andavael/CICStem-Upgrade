@@ -23,10 +23,7 @@
     <form action="{{ route('admin.announcements.index') }}" method="GET" class="filter-bar-simple">
         <div class="filter-group">
             <label class="filter-label">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-                </svg>
-                Filter Status
+                <h2>Filter Status</h2>
             </label>
             <select name="status" class="filter-input" onchange="this.form.submit()">
                 <option value="">All Announcements</option>
@@ -184,7 +181,7 @@
 @if($announcements->count() > 0)
 <div class="content-panel panel-enhanced">
     <div class="panel-header">
-        <h2 class="panel-title">🔔 Recent Announcements Preview</h2>
+        <h2 class="panel-title">Recent Announcements Preview</h2>
     </div>
     
     <div class="announcements-grid">

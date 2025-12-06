@@ -86,13 +86,12 @@ Route::middleware(['auth:student'])->prefix('student')->name('student.')->group(
         Route::put('/password', [StudentProfileController::class, 'updatePassword'])->name('password');
     });
     
-    // Notifications
-    Route::prefix('notifications')->name('notifications.')->group(function () {
-        Route::get('/', [StudentNotificationsController::class, 'index'])->name('notifications');
-        Route::post('/{id}/read', [StudentNotificationsController::class, 'markAsRead'])->name('notifications.markRead');
-        Route::post('/read-all', [StudentNotificationsController::class, 'markAllAsRead'])->name('notifications.markAllRead');
-        Route::delete('/{id}', [StudentNotificationsController::class, 'destroy'])->name('notifications.delete');
-    });
+    // Notifications - CORRECTED ROUTE NAMES
+    // Notifications - FINAL FIX
+    Route::get('/notifications', [StudentNotificationsController::class, 'index'])->name('notifications');
+    Route::post('/notifications/{id}/read', [StudentNotificationsController::class, 'markAsRead'])->name('notifications.markRead');
+    Route::post('/notifications/read-all', [StudentNotificationsController::class, 'markAllAsRead'])->name('notifications.markAllRead');
+    Route::delete('/notifications/{id}', [StudentNotificationsController::class, 'destroy'])->name('notifications.delete');
 });
 
 /*

@@ -92,6 +92,22 @@
             background: #1e3a5f;
         }
 
+        /* Notification badge - inline style */
+        .notification-badge-inline {
+            display: inline-block;
+            background: #dc3545;
+            color: white;
+            border-radius: 12px;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            margin-left: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 20px;
+            text-align: center;
+        }
+
         /* Loading indicator */
         .loading {
             display: inline-block;
@@ -136,30 +152,30 @@
         <aside class="student-sidebar">
             <ul class="sidebar-menu">
                 <li class="sidebar-item {{ request()->routeIs('student.dashboard*') ? 'active' : '' }}">
-                    <a href="{{ route('student.dashboard') }}">📊 Dashboard</a>
+                    <a href="{{ route('student.dashboard') }}">Dashboard</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('student.available-sessions*') ? 'active' : '' }}">
-                    <a href="{{ route('student.available-sessions.index') }}">🔍 Browse Sessions</a>
+                    <a href="{{ route('student.available-sessions.index') }}">Browse Sessions</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('student.my-sessions*') ? 'active' : '' }}">
-                    <a href="{{ route('student.my-sessions.index') }}">📚 My Sessions</a>
+                    <a href="{{ route('student.my-sessions.index') }}">My Sessions</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('student.announcements*') ? 'active' : '' }}">
-                    <a href="{{ route('student.announcements.index') }}">📢 Announcements</a>
+                    <a href="{{ route('student.announcements.index') }}">Announcements</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('student.feedback*') ? 'active' : '' }}">
-                    <a href="{{ route('student.feedback.index') }}">⭐ Feedback</a>
+                    <a href="{{ route('student.feedback.index') }}">Feedback</a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('student.notifications*') ? 'active' : '' }}">
-                    <a href="{{ route('student.notifications.notifications') }}">
-                        🔔 Notifications
+                    <a href="{{ route('student.notifications') }}">
+                        Notifications
                         @if(isset($unreadCount) && $unreadCount > 0)
-                            <span class="notification-badge">{{ $unreadCount }}</span>
+                            <span class="notification-badge-inline">{{ $unreadCount }}</span>
                         @endif
                     </a>
                 </li>
                 <li class="sidebar-item {{ request()->routeIs('student.profile*') ? 'active' : '' }}">
-                    <a href="{{ route('student.profile.index') }}">👤 Profile</a>
+                    <a href="{{ route('student.profile.index') }}">Profile</a>
                 </li>
             </ul>
         </aside>
@@ -234,7 +250,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
                     </svg>
-                    <a href="https://facebook.com/CICCStudentCouncil" target="_blank">CICC-Student Council</a>
+                    <a href="https://www.facebook.com/CICSStudentCouncil" target="_blank">CICS-Student Council</a>
                 </div>
             </div>
         </div>

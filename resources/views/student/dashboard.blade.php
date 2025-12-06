@@ -17,13 +17,6 @@
     </div>
 </div>
 
-<!-- Welcome Message -->
-<div class="content-panel" style="background-color: #3797f745;">
-    <p style="color: #00213fff; font-size: 15px;">
-        Here's an overview of your tutoring activities and upcoming sessions.
-    </p>
-</div>
-
 <!-- Statistics Cards -->
 <div class="stats-grid">
     <div class="stat-card">
@@ -32,19 +25,19 @@
         <div class="stat-description">Sessions joined</div>
     </div>
     
-    <div class="stat-card success">
+    <div class="stat-card">
         <div class="stat-label">Sessions Attended</div>
         <div class="stat-value">{{ $attendedSessions }}</div>
         <div class="stat-description">{{ $attendanceRate }}% attendance rate</div>
     </div>
     
-    <div class="stat-card warning">
+    <div class="stat-card">
         <div class="stat-label">Upcoming Sessions</div>
         <div class="stat-value">{{ $pendingSessions }}</div>
         <div class="stat-description">Scheduled ahead</div>
     </div>
     
-    <div class="stat-card danger">
+    <div class="stat-card">
         <div class="stat-label">Absences</div>
         <div class="stat-value">{{ $absentSessions }}</div>
         <div class="stat-description">Sessions missed</div>

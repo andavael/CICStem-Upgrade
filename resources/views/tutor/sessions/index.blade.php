@@ -12,14 +12,12 @@
     <!-- Enhanced Tabs -->
     <div class="tabs-enhanced">
         <button class="tab-btn-enhanced {{ $tab === 'my' ? 'active' : '' }}" onclick="window.location='{{ route('tutor.sessions.index', ['tab' => 'my']) }}'">
-            <span class="tab-icon">📖</span>
             <span>My Sessions</span>
             @if(isset($mySessions))
             <span class="tab-count">{{ $mySessions->total() }}</span>
             @endif
         </button>
         <button class="tab-btn-enhanced {{ $tab === 'all' ? 'active' : '' }}" onclick="window.location='{{ route('tutor.sessions.index', ['tab' => 'all']) }}'">
-            <span class="tab-icon">📋</span>
             <span>All Sessions</span>
             @if(isset($allSessions))
             <span class="tab-count">{{ $allSessions->total() }}</span>

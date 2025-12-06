@@ -8,6 +8,8 @@ use App\Models\Tutor;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\StudentNotification;
+use App\Models\TutorNotification;
 
 class AdminSessionController extends Controller
 {
@@ -94,24 +96,19 @@ class AdminSessionController extends Controller
      */
     private function updateExpiredSessions()
     {
-        $now = now(); // Gets current time in Laravel's configured timezone
+        $now = now();
         
-        // Get all Scheduled or Ongoing sessions
         $sessions = Session::whereIn('status', ['Scheduled', 'Ongoing'])->get();
         
         foreach ($sessions as $session) {
             try {
-                // Parse session time (handles both H:i and H:i:s formats)
-                $timeString = substr($session->session_time, 0, 5); // Get HH:MM part
+                $timeString = substr($session->session_time, 0, 5);
                 
-                // Combine session date and time - use same timezone as $now
                 $sessionDateStr = $session->session_date->format('Y-m-d');
                 $sessionStart = Carbon::parse($sessionDateStr . ' ' . $timeString, $now->timezone);
                 
-                // Add 2 hours to get session end time
                 $sessionEnd = $sessionStart->copy()->addHours(2);
                 
-                // Debug logging (remove after testing)
                 \Log::info("Session Check", [
                     'session_id' => $session->id,
                     'current_time' => $now->format('Y-m-d H:i:s'),
@@ -121,12 +118,10 @@ class AdminSessionController extends Controller
                     'timezone' => $now->timezone->getName()
                 ]);
                 
-                // If session has started but not ended, mark as Ongoing
                 if ($now->gte($sessionStart) && $now->lt($sessionEnd) && $session->status === 'Scheduled') {
                     $session->update(['status' => 'Ongoing']);
                     \Log::info("Updated session {$session->id} to Ongoing");
                 }
-                // If current time is past session end time, mark as Completed
                 elseif ($now->gte($sessionEnd) && in_array($session->status, ['Scheduled', 'Ongoing'])) {
                     $session->update(['status' => 'Completed']);
                     \Log::info("Updated session {$session->id} to Completed");
@@ -142,27 +137,21 @@ class AdminSessionController extends Controller
      */
     private function checkTutorConflict($tutorId, $sessionDate, $sessionTime, $excludeSessionId = null)
     {
-        // Parse the new session datetime
         $newSessionStart = Carbon::createFromFormat('Y-m-d H:i', $sessionDate . ' ' . $sessionTime);
         
-        // Each session lasts 2 hours
         $newSessionEnd = $newSessionStart->copy()->addHours(2);
         
-        // Query for existing sessions for this tutor
         $query = Session::where('tutor_id', $tutorId)
-                       ->where('status', '!=', 'Cancelled'); // Ignore cancelled sessions
+                       ->where('status', '!=', 'Cancelled');
         
-        // Exclude current session when editing
         if ($excludeSessionId) {
             $query->where('id', '!=', $excludeSessionId);
         }
         
         $existingSessions = $query->get();
         
-        // Check for overlaps
         foreach ($existingSessions as $existing) {
-            // Parse session time (handles both H:i and H:i:s formats)
-            $timeString = substr($existing->session_time, 0, 5); // Get HH:MM part
+            $timeString = substr($existing->session_time, 0, 5);
             
             $existingStart = Carbon::createFromFormat(
                 'Y-m-d H:i',
@@ -170,8 +159,6 @@ class AdminSessionController extends Controller
             );
             $existingEnd = $existingStart->copy()->addHours(2);
             
-            // Check if sessions overlap
-            // Sessions overlap if: new starts before existing ends AND new ends after existing starts
             if ($newSessionStart->lt($existingEnd) && $newSessionEnd->gt($existingStart)) {
                 return [
                     'conflict' => true,
@@ -194,7 +181,7 @@ class AdminSessionController extends Controller
             'session_time' => 'required|date_format:H:i',
             'tutor_id' => 'required|exists:tutors,id',
             'capacity' => 'required|integer|min:1|max:100',
-            'year_level' => 'required|in:1st Year,2nd Year,3rd Year,4th Year,All',
+            'year_level' => 'required|in:First Year,Second Year',
             'google_meet_link' => 'nullable|url',
             'description' => 'nullable|string',
             'status' => 'nullable|in:Scheduled,Ongoing,Completed,Cancelled',
@@ -202,13 +189,11 @@ class AdminSessionController extends Controller
             'session_date.after_or_equal' => 'The session date cannot be in the past.'
         ]);
 
-        // Build exact datetime using createFromFormat (MOST RELIABLE)
         $sessionDateTime = Carbon::createFromFormat(
             'Y-m-d H:i',
             $validated['session_date'] . ' ' . $validated['session_time']
         );
 
-        // Compare with current datetime (in Laravel timezone)
         if ($sessionDateTime->lt(now())) {
             return back()
                 ->withErrors([
@@ -217,7 +202,6 @@ class AdminSessionController extends Controller
                 ->withInput();
         }
 
-        // Check for tutor conflicts
         $conflictCheck = $this->checkTutorConflict(
             $validated['tutor_id'],
             $validated['session_date'],
@@ -226,7 +210,6 @@ class AdminSessionController extends Controller
         
         if ($conflictCheck['conflict']) {
             $conflictingSession = $conflictCheck['session'];
-            // Parse session time (handles both H:i and H:i:s formats)
             $timeString = substr($conflictingSession->session_time, 0, 5);
             $conflictDateTime = Carbon::createFromFormat(
                 'Y-m-d H:i',
@@ -240,21 +223,21 @@ class AdminSessionController extends Controller
                 ->withInput();
         }
 
-        // Set default status to Scheduled if not provided
         $validated['status'] = $validated['status'] ?? 'Scheduled';
 
-        // Generate session code
         $validated['session_code'] = 'SES-' . strtoupper(substr(uniqid(), -8));
 
-        // Auto-generate Google Meet link with note
         if (empty($validated['google_meet_link'])) {
             $validated['google_meet_link'] = 'https://meet.google.com/new';
         }
 
-        Session::create($validated);
+        $session = Session::create($validated);
+
+        // Notify the assigned tutor
+        $this->notifyTutorOfNewAssignment($session);
 
         return redirect()->route('admin.sessions.index')
-            ->with('success', 'Session created successfully. Note: You can create the actual Google Meet link and update it later.');
+            ->with('success', 'Session created successfully. The assigned tutor has been notified.');
     }
 
     
@@ -263,10 +246,8 @@ class AdminSessionController extends Controller
      */
     public function show(Session $session)
     {
-        // Auto-update expired sessions
         $this->updateExpiredSessions();
         
-        // Refresh the session to get updated status
         $session = $session->fresh(['tutor', 'students']);
         
         $enrolledCount = $session->students()->count();
@@ -293,27 +274,29 @@ class AdminSessionController extends Controller
      */
     public function update(Request $request, Session $session)
     {
+        // Store old values for comparison
+        $oldDate = $session->session_date->format('Y-m-d');
+        $oldTime = $session->session_time;
+        $oldStatus = $session->status;
+        $oldTutorId = $session->tutor_id;
+
         $validated = $request->validate([
             'subject' => 'required|string|max:255',
             'session_date' => 'required|date',
             'session_time' => 'required|date_format:H:i',
             'tutor_id' => 'required|exists:tutors,id',
             'capacity' => 'required|integer|min:1|max:100',
-            'year_level' => 'required|in:1st Year,2nd Year,3rd Year,4th Year,All',
-            'google_meet_link' => 'required|url|regex:/^https:\/\/meet\.google\.com\/[a-z]{3}-[a-z]{4}-[a-z]{3}$/',
+            'year_level' => 'required|in:First Year,Second Year',
+            'google_meet_link' => 'nullable|url',
             'description' => 'nullable|string',
             'status' => 'required|in:Scheduled,Ongoing,Completed,Cancelled',
-        ], [
-            'google_meet_link.regex' => 'Google Meet link must be in the format: https://meet.google.com/xxx-yyyy-zzz'
         ]);
 
-        // Build exact datetime using createFromFormat
         $sessionDateTime = Carbon::createFromFormat(
             'Y-m-d H:i',
             $validated['session_date'] . ' ' . $validated['session_time']
         );
 
-        // Compare with current datetime - prevent past dates
         if ($sessionDateTime->lt(now())) {
             return back()
                 ->withErrors([
@@ -322,17 +305,15 @@ class AdminSessionController extends Controller
                 ->withInput();
         }
 
-        // Check for tutor conflicts (excluding current session)
         $conflictCheck = $this->checkTutorConflict(
             $validated['tutor_id'],
             $validated['session_date'],
             $validated['session_time'],
-            $session->id // Exclude current session from conflict check
+            $session->id
         );
         
         if ($conflictCheck['conflict']) {
             $conflictingSession = $conflictCheck['session'];
-            // Parse session time (handles both H:i and H:i:s formats)
             $timeString = substr($conflictingSession->session_time, 0, 5);
             $conflictDateTime = Carbon::createFromFormat(
                 'Y-m-d H:i',
@@ -346,10 +327,39 @@ class AdminSessionController extends Controller
                 ->withInput();
         }
         
+        if (empty($validated['google_meet_link'])) {
+            $validated['google_meet_link'] = 'https://meet.google.com/new';
+        }
+        
+        // Check what changed
+        $dateChanged = ($oldDate !== $validated['session_date']);
+        $timeChanged = ($oldTime !== $validated['session_time']);
+        $statusChanged = ($oldStatus !== $validated['status']);
+        $tutorChanged = ($oldTutorId !== $validated['tutor_id']);
+        $wasCancelled = ($validated['status'] === 'Cancelled' && $oldStatus !== 'Cancelled');
+
+        // Update the session
         $session->update($validated);
         
+        // Send notifications to students
+        if ($wasCancelled) {
+            $this->notifyStudentsOfSessionChange($session, 'cancelled');
+            $this->notifyTutorOfCancellation($session);
+        } elseif ($dateChanged || $timeChanged) {
+            $this->notifyStudentsOfSessionChange($session, 'rescheduled', $oldDate, $oldTime);
+            $this->notifyTutorOfReschedule($session, $oldDate, $oldTime);
+        } elseif ($statusChanged || $session->wasChanged()) {
+            $this->notifyStudentsOfSessionChange($session, 'modified');
+            $this->notifyTutorOfModification($session);
+        }
+        
+        // If tutor was changed, notify both old and new tutor
+        if ($tutorChanged) {
+            $this->notifyTutorOfReassignment($session, $oldTutorId);
+        }
+        
         return redirect()->route('admin.sessions.show', $session)
-            ->with('success', 'Session updated successfully');
+            ->with('success', 'Session updated successfully. All affected parties have been notified.');
     }
     
     /**
@@ -370,7 +380,123 @@ class AdminSessionController extends Controller
     {
         $session->update(['status' => 'Cancelled']);
         
+        // Notify all enrolled students
+        $this->notifyStudentsOfSessionChange($session, 'cancelled');
+        
+        // Notify the tutor
+        $this->notifyTutorOfCancellation($session);
+        
         return redirect()->back()
-            ->with('success', 'Session cancelled successfully');
+            ->with('success', 'Session cancelled successfully. All enrolled students and the tutor have been notified.');
+    }
+
+    /**
+     * Notify students of session changes
+     */
+    private function notifyStudentsOfSessionChange($session, $changeType, $oldDate = null, $oldTime = null)
+    {
+        $enrolledStudents = $session->students()->pluck('students.id')->toArray();
+        
+        if (empty($enrolledStudents)) {
+            return;
+        }
+
+        $sessionDate = \Carbon\Carbon::parse($session->session_date)->format('M d, Y');
+        $sessionTime = substr($session->session_time, 0, 5);
+
+        switch ($changeType) {
+            case 'modified':
+                $title = 'Session Schedule Changed';
+                if ($oldDate && $oldTime) {
+                    $oldDateFormatted = \Carbon\Carbon::parse($oldDate)->format('M d, Y');
+                    $oldTimeFormatted = substr($oldTime, 0, 5);
+                    $message = "The session '{$session->subject} ({$session->session_code})' has been rescheduled from {$oldDateFormatted} at {$oldTimeFormatted} to {$sessionDate} at {$sessionTime}. Please check your schedule.";
+                } else {
+                    $message = "The session '{$session->subject} ({$session->session_code})' scheduled for {$sessionDate} at {$sessionTime} has been updated. Please review the changes.";
+                }
+                $type = 'session_modified';
+                break;
+
+            case 'cancelled':
+                $title = 'Session Cancelled';
+                $message = "Unfortunately, the session '{$session->subject} ({$session->session_code})' scheduled for {$sessionDate} at {$sessionTime} has been cancelled. We apologize for any inconvenience.";
+                $type = 'session_cancelled';
+                break;
+
+            case 'rescheduled':
+                $title = 'Session Rescheduled';
+                $oldDateFormatted = \Carbon\Carbon::parse($oldDate)->format('M d, Y');
+                $oldTimeFormatted = substr($oldTime, 0, 5);
+                $message = "The session '{$session->subject} ({$session->session_code})' has been rescheduled from {$oldDateFormatted} at {$oldTimeFormatted} to {$sessionDate} at {$sessionTime}.";
+                $type = 'session_rescheduled';
+                break;
+
+            default:
+                return;
+        }
+
+        StudentNotification::notifyStudents(
+            $enrolledStudents,
+            $type,
+            $title,
+            $message,
+            $session->id
+        );
+    }
+
+    /**
+     * Notify tutor of new session assignment
+     */
+    private function notifyTutorOfNewAssignment($session)
+    {
+        TutorNotification::notifyTutors(
+            $session->tutor_id,
+            'session_update',
+            'New Session Assigned',
+            "You have been assigned to a new tutoring session: '{$session->subject} ({$session->session_code})' scheduled for {$session->session_date->format('M d, Y')} at " . substr($session->session_time, 0, 5) . ". Please review the session details.",
+            $session->id
+        );
+    }
+
+    /**
+     * Notify tutor of session cancellation
+     */
+    private function notifyTutorOfCancellation($session)
+    {
+        TutorNotification::notifySessionCancelled($session->tutor_id, $session);
+    }
+
+    /**
+     * Notify tutor of session reschedule
+     */
+    private function notifyTutorOfReschedule($session, $oldDate, $oldTime)
+    {
+        TutorNotification::notifySessionRescheduled($session->tutor_id, $session, $oldDate, $oldTime);
+    }
+
+    /**
+     * Notify tutor of session modification
+     */
+    private function notifyTutorOfModification($session)
+    {
+        TutorNotification::notifySessionModified($session->tutor_id, $session);
+    }
+
+    /**
+     * Notify tutors of session reassignment
+     */
+    private function notifyTutorOfReassignment($session, $oldTutorId)
+    {
+        // Notify old tutor that session was reassigned
+        TutorNotification::notifyTutors(
+            $oldTutorId,
+            'session_update',
+            'Session Reassigned',
+            "The session '{$session->subject} ({$session->session_code})' that was previously assigned to you has been reassigned to another tutor.",
+            $session->id
+        );
+
+        // Notify new tutor of assignment
+        $this->notifyTutorOfNewAssignment($session);
     }
 }

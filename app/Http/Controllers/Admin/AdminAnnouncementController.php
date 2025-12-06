@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
+use App\Models\StudentNotification;
+use App\Models\Student;
+use App\Models\TutorNotification;
+use App\Models\Tutor;
 
 class AdminAnnouncementController extends Controller
 {
@@ -53,7 +57,20 @@ class AdminAnnouncementController extends Controller
             'priority' => 'required|in:Normal,High,Urgent',
         ]);
         
-        Announcement::create($validated);
+        $announcement = Announcement::create($validated);
+        
+        // Notify users if priority is Urgent
+        if ($validated['priority'] === 'Urgent') {
+            // Notify students if audience includes Students
+            if (in_array($validated['target_audience'], ['All', 'Students'])) {
+                $this->notifyStudentsOfUrgentAnnouncement($announcement);
+            }
+            
+            // Notify tutors if audience includes Tutors
+            if (in_array($validated['target_audience'], ['All', 'Tutors'])) {
+                $this->notifyTutorsOfUrgentAnnouncement($announcement);
+            }
+        }
         
         return redirect()->route('admin.announcements.index')
             ->with('success', 'Announcement posted successfully');
@@ -72,6 +89,9 @@ class AdminAnnouncementController extends Controller
      */
     public function update(Request $request, Announcement $announcement)
     {
+        $oldPriority = $announcement->priority;
+        $oldAudience = $announcement->target_audience;
+        
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -81,6 +101,19 @@ class AdminAnnouncementController extends Controller
         ]);
         
         $announcement->update($validated);
+        
+        // Notify users if priority was changed to Urgent
+        if ($validated['priority'] === 'Urgent' && $oldPriority !== 'Urgent') {
+            // Notify students if audience includes Students
+            if (in_array($validated['target_audience'], ['All', 'Students'])) {
+                $this->notifyStudentsOfUrgentAnnouncement($announcement);
+            }
+            
+            // Notify tutors if audience includes Tutors
+            if (in_array($validated['target_audience'], ['All', 'Tutors'])) {
+                $this->notifyTutorsOfUrgentAnnouncement($announcement);
+            }
+        }
         
         return redirect()->route('admin.announcements.index')
             ->with('success', 'Announcement updated successfully');
@@ -106,5 +139,49 @@ class AdminAnnouncementController extends Controller
         
         return redirect()->back()
             ->with('success', 'Announcement archived successfully');
+    }
+
+    /**
+     * Notify all students about urgent announcements
+     */
+    private function notifyStudentsOfUrgentAnnouncement($announcement)
+    {
+        // Get all active students
+        $studentIds = Student::where('status', 'Active')->pluck('id')->toArray();
+        
+        if (empty($studentIds)) {
+            return;
+        }
+
+        // Truncate content if too long
+        $message = strlen($announcement->content) > 200 
+            ? substr($announcement->content, 0, 200) . '...' 
+            : $announcement->content;
+
+        StudentNotification::notifyStudents(
+            $studentIds,
+            'urgent_announcement',
+            'URGENT: ' . $announcement->title,
+            $message,
+            $announcement->id
+        );
+    }
+    
+    /**
+     * Notify all tutors about urgent announcements
+     */
+    private function notifyTutorsOfUrgentAnnouncement($announcement)
+    {
+        // Get all active and approved tutors
+        $tutorIds = Tutor::where('status', 'Active')
+                        ->where('is_approved', true)
+                        ->pluck('id')
+                        ->toArray();
+        
+        if (empty($tutorIds)) {
+            return;
+        }
+
+        TutorNotification::notifyUrgentAnnouncement($tutorIds, $announcement);
     }
 }

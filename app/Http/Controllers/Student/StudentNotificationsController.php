@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Models\StudentNotification;
 
 class StudentNotificationsController extends Controller
 {
@@ -16,13 +16,11 @@ class StudentNotificationsController extends Controller
     {
         $student = Auth::guard('student')->user();
         
-        $notifications = DB::table('student_notifications')
-            ->where('student_id', $student->id)
+        $notifications = StudentNotification::where('student_id', $student->id)
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        $unreadCount = DB::table('student_notifications')
-            ->where('student_id', $student->id)
+        $unreadCount = StudentNotification::where('student_id', $student->id)
             ->where('is_read', false)
             ->count();
 
@@ -36,14 +34,11 @@ class StudentNotificationsController extends Controller
     {
         $student = Auth::guard('student')->user();
         
-        DB::table('student_notifications')
-            ->where('id', $id)
+        $notification = StudentNotification::where('id', $id)
             ->where('student_id', $student->id)
-            ->update([
-                'is_read' => true,
-                'read_at' => now(),
-                'updated_at' => now()
-            ]);
+            ->firstOrFail();
+
+        $notification->markAsRead();
 
         return redirect()->back()->with('success', 'Notification marked as read');
     }
@@ -55,8 +50,7 @@ class StudentNotificationsController extends Controller
     {
         $student = Auth::guard('student')->user();
         
-        DB::table('student_notifications')
-            ->where('student_id', $student->id)
+        StudentNotification::where('student_id', $student->id)
             ->where('is_read', false)
             ->update([
                 'is_read' => true,
@@ -74,10 +68,11 @@ class StudentNotificationsController extends Controller
     {
         $student = Auth::guard('student')->user();
         
-        DB::table('student_notifications')
-            ->where('id', $id)
+        $notification = StudentNotification::where('id', $id)
             ->where('student_id', $student->id)
-            ->delete();
+            ->firstOrFail();
+
+        $notification->delete();
 
         return redirect()->back()->with('success', 'Notification deleted');
     }
